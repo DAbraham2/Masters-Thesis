@@ -9,6 +9,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   compile_document:
     runs-on: ubuntu-latest
