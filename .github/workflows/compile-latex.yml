@@ -1,6 +1,13 @@
 name: Compile and deploy LaTeX document
 
-on: [push, pull_request]
+on: 
+  push:
+    branches:
+      - main
+      - test-branch
+  pull_request:
+    branches:
+      - main
 
 jobs:
   compile_document:
@@ -24,7 +31,7 @@ jobs:
           echo "- Commit: [$GITHUB_SHA](https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA)"
         } > $OUT_DIR/README.md
         # copy PDF outputs from `pdf` folder
-        cp pdf/*.pdf $OUT_DIR
+        cp docs/pdf/*.pdf $OUT_DIR
     - name: Deploy site and PDFs
       uses: JamesIves/github-pages-deploy-action@5dc1d5a192aeb5ab5b7d5a77b7d36aea4a7f5c92  # 4.1.4
       with:
