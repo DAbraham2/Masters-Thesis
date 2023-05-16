@@ -50,6 +50,21 @@
   author       = {{Budapesti Műszaki és Gazdaságtudományi Egyetem Villamosmérnöki és Informatikai Kar}},
   howpublished = {\url{http://diplomaterv.vik.bme.hu/}},
   title        = {Diplomaterv portál (2011. február 26.)},
+  year         = {2011}
+}
+
+@misc{bt_history,
+  author       = {{Bluetooth Special Intrest Group}},
+  howpublished = {\url{https://web.archive.org/web/20180525083558/https://www.bluetooth.com/about-us/our-history}},
+  title        = {Our History (2018. may 25.)},
+  year         = {2018},
+}
+
+@misc{bt_spec_history,
+  author       = {{Bluetooth Special Intrest Group}}, 
+  howpublished = {\url{https://www.bluetooth.com/specifications/specs/?types=specs-docs&keyword=Core+Specification}},
+  title        = {Specifications and Documents (2023. 05. 16)},
+  year         = {2023}
 }
 
 @incollection{Mkrtychev:1997,
@@ -78,10 +93,61 @@
 }
 
 @report{ble_primer23,
-  author      = {Martin Woolley and Bluetooth SIG},
+  author      = {Martin, Woolley and Bluetooth SIG},
   institution = {Bluetooth Special Intrest Group},
   title       = {The Bluetooth Low Energy Primer},
   year        = {2023},
   type ={techreport},
   note={\url{https://www.bluetooth.com/wp-content/uploads/2022/05/The-Bluetooth-LE-Primer-V1.1.0.pdf}}
 }
+
+@book{Townsend14,
+  author         = {Townsend, Kevin and Cufi, Carles and Akiba and Davidson, Robert},
+  publisher      = {O'Reilly Media, Inc.},
+  title          = {Getting Started with Bluetooth Low Energy},
+  year           = {2014}
+}
+
+@book{Usama17,
+  author         = {Usama bin Aftab, Muhammad},
+  publisher      = {Packt Publising},
+  title          = {Building Bluetooth Low Energy Systems},
+  year           = {2017}
+}
+
+@article{Dideles03,
+author = {Dideles, Myra},
+title = {Bluetooth: A Technical Overview},
+year = {2003},
+issue_date = {June 2003},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {9},
+number = {4},
+issn = {1528-4972},
+url = {https://doi.org/10.1145/904080.904083},
+doi = {10.1145/904080.904083},
+journal = {XRDS},
+month = {jun},
+pages = {11–18},
+numpages = {8}
+}
+
+@inproceedings{Leopold03,
+author = {Leopold, Martin and Dydensborg, Mads Bondo and Bonnet, Philippe},
+title = {Bluetooth and Sensor Networks: A Reality Check},
+year = {2003},
+isbn = {1581137079},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/958491.958504},
+doi = {10.1145/958491.958504},
+abstract = {The current generation of sensor nodes rely on commodity components. The choice of the radio is particularly important as it impacts not only energy consumption but also software design (e.g., network self-assembly, multihop routing and in-network processing). Bluetooth is one of the most popular commodity radios for wireless devices. As a representative of the frequency hopping spread spectrum radios, it is a natural alternative to broadcast radios in the context of sensor networks. The question is whether Bluetooth can be a viable alternative in practice. In this paper, we report our experience using Bluetooth for the sensor network regime. We describe our tiny Bluetooth stack that allows TinyOS applications to run on Bluetooth-based sensor nodes, we present a multihop network assembly procedure that leverages Bluetooth's device discovery protocol, and we discuss how Bluetooth favorably impacts in-network query processing. Our results show that despite obvious limitations the Bluetooth sensor nodes we studied exhibit interesting properties, such as a good energy per bit sent ratio. This reality check underlies the limitations and some promises of Bluetooth for the sensor network regime.},
+booktitle = {Proceedings of the 1st International Conference on Embedded Networked Sensor Systems},
+pages = {103–113},
+numpages = {11},
+keywords = {sensor nodes, mac layer, bluetooth, network self-assembly},
+location = {Los Angeles, California, USA},
+series = {SenSys '03}
+}
+

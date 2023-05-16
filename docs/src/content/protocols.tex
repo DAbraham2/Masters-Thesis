@@ -1,19 +1,55 @@
 \chapter{Wireless protocols}
+\label{chap:wireless}
 
 bla bla
 
-\section{ISM radio band}
+In this chapter, I will describe the Industrial, Scientific and Medical (ISM) 2,4 \(GHz\) radio band in \autoref{sec:ism}.
+After that, I will demonstrate each wireless protocol starting with Bluetooth Low Energy in \autoref{sec:ble},
+Zigbee in \autoref{sec:zig}, and finally Thread/OpenThread in \autoref{sec:ot}.
+\autoref{sec:15_4} will provide an overview of the IEEE 802.15.4 radio specification, of which both Zigbee and Thread is based on.
 
-\section{Bluetooth}
+\section{ISM radio band}
+\label{sec:ism}
+
+\section{Bluetooth Low Energy}
+\label{sec:ble}
+Bluetooth is one of the most popular commodity radios for wireless devices.
+As a representative of the frequency hopping spread spectrum radios,
+it is a natural alternative to broadcast radios in the context of sensor networks. \cite{Leopold03}
+
+Bluetooth is managed by the Bluetooth Special Intrest Group (SIG),
+which has more than 38,000 member companies as of 2023. \cite{bt_history}
+The first specification was released in 1999.
+Since then, the SIG released 5 core specifications, 5.4 being the latest adoption in 2023. \cite{bt_spec_history}
 
 blab bla.\cite{ble_primer23}.
 
+\subsection{Introcution}
+\label{ble:int}
+Bluetooth Low Energy (BLE) started as part of the Bluetooth 4.0 Core Specification.
+It is tempting to represent itself as a smaller and highly optimized version of its bigger brother, classic Bluetooth.
+In reality, BLE has an entirely different lineage and design goals.
+Originally, it was designed by Nokia as Wibree before being adopted by the Bluetooth Special Intrest Group (SIG).
+The focus was to design a radio standard with the lowest possible power consumption, specifically optimized for low cost, low bandwidth, low power, and low complexity. \cite{Townsend14}
+
+\subsection{Overview}
+\label{ble:ow}
+
+\subsection{Generic Access Profile}
+\label{ble:gap}
+
+\subsection{Generic Attibute Profile}
+\label{ble:gatt}
+
 \section{IEEE 802.15.4}
+\label{sec:15_4}
 
 bla bla
 
-\subsection{Zigbee}
+\section{Zigbee}
+\label{sec:zig}
 zigbee is good.
 
-\subsection{Thread/OpenThread}
+\section{Thread/OpenThread}
+\label{sec:ot}
 openthread.
