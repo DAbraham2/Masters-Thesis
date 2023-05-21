@@ -58,6 +58,26 @@ Each block has one or more layers, as shown in \autoref{fig:ble_arch}.
 
 The layers defined in \autoref{fig:ble_arch} provide the required functionality to operate.
 
+The Controller contains the Physical Layer (PHY) and the Link Layer (LL).
+These hold all the responsibility for operating the physical radio channel. 
+Also, these layers are specialized by the LE standard keeping the Host
+layer more-or-less the same as Bluetooth Classic.
+
+
+A device address and an address type identify a device.
+An address type indicates that an address can be either public or random.
+Both are 48 bits long.
+A device shall use at least one type of device address but can use
+both simultaneously.
+Public and random addresses are explained under the Link layer in section 2.4.
+
+In BLE, Generic Access Profile (GAP) defines specific roles for each device.
+These roles are: broadcaster, observer, peripheral, and central.
+A device may support multiple roles but only one at a given time.
+Each role specifies the requirements for the underlying Controller.
+\autoref{ble:gap} explains GAP in more detail.
+
+
 \subsection{Physical layer}
 \label{ble:phy}
 
@@ -83,15 +103,113 @@ thus significantly increasing the maximum throughput.
 
 \subsection{Link layer}
 \label{ble:link}
-The Core Specification's volume six (Low Energy Controller volume),
-part B defines the Bluetooth Low Energy Link Layer's specification.
+Part B of the Core Specification's volume six (Low Energy Controller volume)
+defines the Bluetooth Low Energy Link Layer's specification.
 
 The Link Layer is the component that directly communicates with the PHY.
-It is typically a blend of custom hardware and software. \cite{Townsend14}
+It is typically a blend of custom hardware and software solutions. \cite{Townsend14}
+
+The hardware part usually implements all computationally intensive tasks,
+such as CRC generation/validation, random number generation, and AES encryption. 
+
+The software part of this layer is the only hard real-time part of
+the whole stack because it has to match the radio hardware's timings
+based on the PHY layer's specifications.
+
+The Link Layer can be thought of as a state machine in operation.
+In Figure 3, the representation of this state machine can be seen.
+The Link Layer may have multiple instances of this state machine but shall have
+at least one supporting Advertising or Scanning. (CoreSpec4_0, 2010)
+
+The Core Specification 5.2 introduced two (2) new states:
+Synchronization and Isochronous Broadcasting.
+
+The Air Interface protocol defines the inner working of each state.
+This interface consists of multiple access schemes, device discovery,
+and Link Layer connection methods.
+
+In the case of multiple state-machine instances, the first version of the
+specification (4.0) prohibited certain combinations of states (and roles).
+Table 1 specifies the allowed and prohibited state machine combinations.
+From the release of Core Specification 5.2, an implementation may support
+any combination of states and roles. The only criterion is that any two (2)
+devices shall not have more than one connection between them. (CoreSpec5_2, 2019)
+
+\subsubsection{Physical channel selection}
+\label{ble:link:sel}
+After the introduction in Core Specification 5, there are two algorithms for
+channel selection.
+The initial algorithm (called Channel Selection Algorithm #1) only supports
+channel selection for connection events.
+Algorithm #2 can be used for connection and periodic advertising events.
+J. Yin et al. showed that this update significantly enhanced the robustness
+of the protocol. (Yin, 2019)
+
+\subsubsection{Link Layer Control protocol}
+\label{ble:link:llcp}
+The Link Layer Control protocol (LLCP) is used to control and
+negotiate aspects of the operation of a connection between two Link Layers.
+This includes procedures for control of the connection, starting and pausing
+encryption, and other link procedures. (CoreSpec4_0, 2010)
+
+One of the most significant procedures is the Channel Map Update Procedure.
+This ensures that upon a physical channel update (initiated by
+frequency hopping), both the master and the slave stay in sync
+with the physical channel index.
+
+% \usepackage{multirow}
+\begin{table}[]
+    \begin{tabular}{lllllll}
+    \multicolumn{2}{l}{\multirow{2}{*}{Multiple State and Role}}  & \multirow{2}{*}{Advertising} & \multirow{2}{*}{Scanning} & \multirow{2}{*}{Initiating} & \multicolumn{2}{l}{Connection} \\
+    \multicolumn{2}{l}{}                                          &                              &                           &                             & Master Role    & Slave Role    \\
+    \multicolumn{2}{l}{Advertising}                               & Prohibited                   & Allowed                   & Allowed                     & Allowed        & Allowed       \\
+    \multicolumn{2}{l}{Scanning}                                  & Allowed                      & Prohibited                & Allowed                     & Allowed        & Allowed       \\
+    \multicolumn{2}{l}{Initiating}                                & Allowed                      & Allowed                   & Prohibited                  & Allowed        & Prohibited    \\
+    \multicolumn{1}{c}{\multirow{2}{*}{Connection}} & Master Role & Allowed                      & Allowed                   & Allowed                     & Allowed        & Prohibited    \\
+    \multicolumn{1}{c}{}                            & Slave Role  & Allowed                      & Allowed                   & Prohibited                  & Prohibited     & Prohibited   
+    \end{tabular}
+    \caption{Link Layer State Machine limitations (obsolate)}
+    \label{tab:llstate_limit}
+    \end{table}
+
+\subsection{Host Controller Interface}
+The Host Controller Interface (HCI) connects the Controller (low-level)
+and Host (high-level) parts of the BLE stack.
+It contains a technology-independent logical command interface structure
+(HCI driver) and a Host Controller Transport Layer.
+The HCI provides a uniform interface for accessing a Bluetooth Controller's
+capability.
+
+According to the standard, separating was necessary to keep the HCI driver
+independent of the underlying transport technology.
+Currently, in the latest standard (Core Specification 5.4), there are four (4)
+different technologies defined for the transport layer:
+UART, USB, Secure Digital (SD), and Three-wire UART.
+
+\subsection{Logical Link Control and Adaption Protocol}
+The Bluetooth logical link control and adaptation protocol (L2CAP)
+supports higher-level protocol multiplexing, packet segmentation and
+reassembly, and the conveying of quality of service information. 
+
+Packet segmentation is necessary because data must fit into 27-byte maximum
+payload size of the BLE packets on the transmit side. (Townsend, 14)
+On the reception path, this procedure has to be reversed.
+
+The Bluetooth logical link control and adaptation protocol (L2CAP) supports
+higher-level protocol multiplexing, packet segmentation and reassembly,
+and the conveying of quality of service information.
+The protocol state machine, packet format, and composition are described
+in this document. (Townsend, 14)
 
 
 \subsection{Generic Access Profile}
 \label{ble:gap}
+The Generic Attribute Profile (GATT) builds on the Attribute Protocol (ATT)
+and adds a hierarchy and data abstraction model on top of it.
+In a way, it can be considered the backbone of BLE data transfer because
+it defines how data is organized and exchanged between applications.
+
+
 
 \subsection{Generic Attibute Profile}
 \label{ble:gatt}
