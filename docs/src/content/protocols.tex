@@ -118,8 +118,7 @@ based on the PHY layer's specifications.
 
 The Link Layer can be thought of as a state machine in operation.
 In Figure 3, the representation of this state machine can be seen.
-The Link Layer may have multiple instances of this state machine but shall have
-at least one supporting Advertising or Scanning. (CoreSpec4_0, 2010)
+The Link Layer may have multiple instances of this state machine but shall have at least one supporting Advertising or Scanning.\cite{bt40}
 
 The Core Specification 5.2 introduced two (2) new states:
 Synchronization and Isochronous Broadcasting.
@@ -133,15 +132,16 @@ specification (4.0) prohibited certain combinations of states (and roles).
 Table 1 specifies the allowed and prohibited state machine combinations.
 From the release of Core Specification 5.2, an implementation may support
 any combination of states and roles. The only criterion is that any two (2)
-devices shall not have more than one connection between them. (CoreSpec5_2, 2019)
+devices shall not have more than one connection between them. \cite{bt52}
+
 
 \subsubsection{Physical channel selection}
 \label{ble:link:sel}
 After the introduction in Core Specification 5, there are two algorithms for
 channel selection.
-The initial algorithm (called Channel Selection Algorithm #1) only supports
+The initial algorithm (called Channel Selection Algorithm \#1) only supports
 channel selection for connection events.
-Algorithm #2 can be used for connection and periodic advertising events.
+Algorithm \#2 can be used for connection and periodic advertising events.
 J. Yin et al. showed that this update significantly enhanced the robustness
 of the protocol. (Yin, 2019)
 
@@ -150,7 +150,7 @@ of the protocol. (Yin, 2019)
 The Link Layer Control protocol (LLCP) is used to control and
 negotiate aspects of the operation of a connection between two Link Layers.
 This includes procedures for control of the connection, starting and pausing
-encryption, and other link procedures. (CoreSpec4_0, 2010)
+encryption, and other link procedures. \cite{bt40}
 
 One of the most significant procedures is the Channel Map Update Procedure.
 This ensures that upon a physical channel update (initiated by
