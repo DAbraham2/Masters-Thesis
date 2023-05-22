@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - test-branch
+      - literature-review
   pull_request:
     branches:
       - main
