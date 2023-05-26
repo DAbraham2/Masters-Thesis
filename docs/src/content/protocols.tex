@@ -232,6 +232,12 @@ It supports mesh networking, allowing devices to relay data to extend the networ
 coverage. Zigbee is known for its low power consumption, simple implementation, and
 ability to support a large number of devices in a network.
 
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=50mm, keepaspectratio]{figures/zigbee-topology-ug103-02-fundamentals-zigbee.jpg}
+    \caption{Star, Full Mesh, and Hybrid Mesh topologies. Source(\cite{zigbee:silabs:ug103:2})}
+\end{figure}
+
 \url{https://www.academia.edu/73196763/A_Survey_of_ZigBee_Wireless_Sensor_Network_Technology_Topology_Applications_and_Challenges}
 
 \url{https://issuu.com/ijtsrd.com/docs/399_literature_survey_on_zigbee_iee}
@@ -239,7 +245,97 @@ ability to support a large number of devices in a network.
 
 \section{Thread/OpenThread}
 \label{sec:ot}
-openthread.
+
+\subsection{Introduction}
+\label{sec:ot:intro}
+Thread is intended to be an open standard, and the protocol is built by incorporating many
+current and proposed standards.\cite{unwala:2018}
+Anyone can download the complete specification from the Thread Group website. \cite{thread:130}
+
+As mentioned, the Thread Group develops and maintains the protocol.
+Thread Group is a not-for-profit organization formed by seven companies:
+ARM (Softbank), Big Ass Fans, Freescale (NXP), Nest Labs (Google), Samsung, Silicon Labs, and Yale Locks.
+More than 200 companies, such as Apple, Google, and Amazon, are forming the Thread Group. \cite{thread:members}
+
+This thesis uses the Thread specification, v1.3.0 2023.
+
+\subsection{Private Area Network}
+\label{sec:ot:pan}
+In a Thread network, there are two types of devices (nodes): Full Thread Device (FTD) and Minimal Thread Device (MTD). FTDs can communicate with each other and with their attached MTD children. MTDs can only communicate with the parent FTD.
+
+A Thread Device can act in six different roles.
+\begin{enumerate}
+    \item Active Router
+    \item Router.Eligible End Device (REED)
+    \item Full End Device (FED)
+    \item Minimal End Device (MED)
+    \item Sleepy End Device (SED)
+    \item Synchronized Sleepy End Device (SEED)
+\end{enumerate}
+
+In order to create a network, the initial node must select an IEEE 802.15.4 channel and
+a PAN Identifier (PAN ID).
+The forming node becomes the PAN's first Router and selects a Rouder ID for itself.
+
+The topology is based on the number of Routers in the Thread Network.
+If there is only one Router, then a basic star topology with a single Router is formed.
+A mesh topology is automatically formed if there is more than one Router.
+\autoref{fig:ot:network} shows a basic topology.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=100mm, keepaspectratio]{figures/thread-topology-ThreadNetworkFundamentals_633_4.jpg}
+    \caption{Channel allocation. (Source: Figure 3 \cite{thread:nfwp})}
+    \label{fig:ot:network}
+\end{figure}
+
+The Mesh Commissioning Protocol (MshCoP) manages how a new device can join a Thread Network.
+A commissioner device is an elected authentication server.
+This device can be a cell phone, a cloud service, or an FTD.
+There can only be one commissioner node in a PAN, and the Thread Management Protocol manages it.
+
+A new device that wants to join the network is called Joiner.
+A Joiner Router is a node that can act as a Router and is one hop away from the Joiner.
+
+There are two main approaches to commissioning:
+\emph{external} if the commissioner is connected to the Thread Network via a Border Router or
+\emph{native} if the commissioner is in the Thread Network. 
+Different approaches are shown in \autoref{fig:ot:commissioning}.
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=67mm, keepaspectratio]{figures/external1-Final_12639Thread_1.3.jpg}\hspace{1cm}
+	\includegraphics[width=67mm, keepaspectratio]{figures/external1-Final_12639Thread_1.3.jpg}\\\vspace{5mm}
+	\includegraphics[width=67mm, keepaspectratio]{figures/native1-Final_12639Thread_1.3.jpg}\hspace{1cm}
+	\includegraphics[width=67mm, keepaspectratio]{figures/native2-Final_12639Thread_1.3.jpg}
+	\caption{External and Nativ commissioning. (Source: \cite{thread:130})}
+	\label{fig:ot:commissioning}
+\end{figure}
+
+
+State machines can define the behavior of the Joiner (see \autoref{fig:ot:joiner-sm}),
+the Joiner Router (see \autoref{fig:ot:joiner-rt-sm}), and the Commissioner (see \autoref{fig:ot:commissioner-sm}).
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[height=150mm, keepaspectratio]{figures/joiner-sm-Final_12639Thread_1.3.jpg}
+    \caption{The Joiner's state machine (Source: \cite{thread:130})}
+    \label{fig:ot:joiner-sm}
+\end{figure}
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=100mm, keepaspectratio]{figures/joiner-rt-smFinal_12639Thread_1.3.jpg}
+    \caption{The Joiner Router's state machine (Source: \cite{thread:130})}
+    \label{fig:ot:joiner-rt-sm}
+\end{figure}
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=100mm, keepaspectratio]{figures/commissioner-sm-Final_12639Thread_1.3.jpg}
+    \caption{The Commissioner's state machine (Source: \cite{thread:130})}
+    \label{fig:ot:commissioner-sm}
+\end{figure}
 
 \url{https://ieeexplore.ieee.org/abstract/document/8767079}
 \url{https://ieeexplore.ieee.org/abstract/document/8373620}
