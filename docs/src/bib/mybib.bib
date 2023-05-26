@@ -324,23 +324,38 @@
   year         = {2023}
 }
 
-@inproceedings{Morgner:2017,
-author = {Morgner, Philipp and Mattejat, Stephan and Benenson, Zinaida and M\"{u}ller, Christian and Armknecht, Frederik},
-title = {Insecure to the Touch: Attacking ZigBee 3.0 via Touchlink Commissioning},
-year = {2017},
-isbn = {9781450350846},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-url = {https://doi.org/10.1145/3098243.3098254},
-doi = {10.1145/3098243.3098254},
-abstract = {Hundred millions of Internet of Things devices implement ZigBee, a low-power mesh network standard, and the number is expected to be growing. To facilitate an easy integration of new devices into a ZigBee network, touchlink commissioning was developed. It was adopted in the latest specifications, ZigBee 3.0, which were released to the public in December 2016, as one of two commissioning options for ZigBee devices. ZigBee 3.0 products can be used in various applications, also including security-critical products such as door locks and intruder alarm systems. The aim of this work is to warn about a further adoption of this commissioning mode. We analyze the security of touchlink commissioning procedure and present novel attacks that make direct use of standard's features, showing that this commissioning procedure is insecure by design. We release an open-source penetration testing framework to evaluate the practical implications of these vulnerabilities. Evaluating our tools on popular ZigBee-certified products, we demonstrate that a passive eavesdropper can extract key material from a distance of 130 meters. Furthermore, an active attacker is able to take-over devices from distances of 190 meters. Our analysis concludes that even a single touchlink-enabled device is sufficient to compromise the security of a ZigBee 3.0 network, and therefore, touchlink commissioning should not be supported in any future ZigBee products.},
-booktitle = {Proceedings of the 10th ACM Conference on Security and Privacy in Wireless and Mobile Networks},
-pages = {230–240},
-numpages = {11},
-keywords = {commissioning, internet of things, IoT, security, ZigBee, touchlink},
-location = {Boston, Massachusetts},
-series = {WiSec '17}
+@manual{nxp:2016,
+  author       = {NXP B.V.},
+  title        = {ZigBee 3.0 - Facilitating the Internet of Things},
+  howpublished = {\url{https://www.nxp.com/docs/en/brochure/75017677.pdf}},
+  year         = {2016}
 }
+
+@manual{ti:new:19,
+  author       = {Texas Instruments},
+  title        = {What's new in Zigbee 3.0},
+  howpublished = {\url{https://www.ti.com/lit/an/swra615a/swra615a.pdf}},
+  year         = {2019},
+}
+
+@inproceedings{Morgner:2017,
+  author    = {Morgner, Philipp and Mattejat, Stephan and Benenson, Zinaida and M\"{u}ller, Christian and Armknecht, Frederik},
+  title     = {Insecure to the Touch: Attacking ZigBee 3.0 via Touchlink Commissioning},
+  year      = {2017},
+  isbn      = {9781450350846},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/3098243.3098254},
+  doi       = {10.1145/3098243.3098254},
+  abstract  = {Hundred millions of Internet of Things devices implement ZigBee, a low-power mesh network standard, and the number is expected to be growing. To facilitate an easy integration of new devices into a ZigBee network, touchlink commissioning was developed. It was adopted in the latest specifications, ZigBee 3.0, which were released to the public in December 2016, as one of two commissioning options for ZigBee devices. ZigBee 3.0 products can be used in various applications, also including security-critical products such as door locks and intruder alarm systems. The aim of this work is to warn about a further adoption of this commissioning mode. We analyze the security of touchlink commissioning procedure and present novel attacks that make direct use of standard's features, showing that this commissioning procedure is insecure by design. We release an open-source penetration testing framework to evaluate the practical implications of these vulnerabilities. Evaluating our tools on popular ZigBee-certified products, we demonstrate that a passive eavesdropper can extract key material from a distance of 130 meters. Furthermore, an active attacker is able to take-over devices from distances of 190 meters. Our analysis concludes that even a single touchlink-enabled device is sufficient to compromise the security of a ZigBee 3.0 network, and therefore, touchlink commissioning should not be supported in any future ZigBee products.},
+  booktitle = {Proceedings of the 10th ACM Conference on Security and Privacy in Wireless and Mobile Networks},
+  pages     = {230–240},
+  numpages  = {11},
+  keywords  = {commissioning, internet of things, IoT, security, ZigBee, touchlink},
+  location  = {Boston, Massachusetts},
+  series    = {WiSec '17}
+}
+
 
 @techreport{thread:130,
   author = {Thread Group},
