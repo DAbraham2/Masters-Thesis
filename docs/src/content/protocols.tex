@@ -1,8 +1,6 @@
 \chapter{Wireless protocols}
 \label{chap:wireless}
 
-bla bla
-
 In this chapter, I will describe the Industrial, Scientific and Medical (ISM) 2,4 \(GHz\) radio band in \autoref{sec:ism}.
 After that, I will demonstrate each wireless protocol starting with Bluetooth Low Energy in \autoref{sec:ble},
 Zigbee in \autoref{sec:zig}, and finally Thread/OpenThread in \autoref{sec:ot}.
@@ -217,7 +215,13 @@ it defines how data is organized and exchanged between applications.
 \section{IEEE 802.15.4}
 \label{sec:15_4}
 
-bla bla
+This standard operates at 250kbps in the 2.4 GHz band and 40kbps/20kbps in the 900/868 MHz bands (Sub-GHz).
+
+\subsection{Physical layer (PHY)}
+
+\subsection{Medium Access Control Layer (MAC)}
+The MAC layer describes essential message handling and congestion control. This layer includes mechanisms for forming and joining a network, a CSMA mechanism, and a link layer for retires and acknowledgment for reliable communication. (ug103-02)
+
 
 \section{Zigbee}
 \label{sec:zig}
@@ -274,7 +278,13 @@ A Zigbee network can be configured to support different topologies: star, tree, 
 \end{figure}
 
 \subsection{Architecture}
+
+Zigbee builds on top of the IEEE 802.15.4 physical layer defined in Section 3. The Zigbee architecture defines two more layers: the network layer (NWK) and the application layer (APL).
+
 \subsection{Network layer}
+
+The NWK layer is responsible for mesh networking, which includes broadcasting packets across the network, determining routes for unicasting packets, and ensuring packets are sent reliably from one node to another. The network layer also has a set of commands for security purposes, including secure joining and rejoining. ZigBee networks are all secured at the NWK layer, and the entire payload of the NWK frame is encrypted
+
 \subsection{Application layer}
 
 The ZigBee application layer consists of the APS sublayer, the ZDO, and the deﬁned by manufacturer application objects. (Wang et al., 2016)
@@ -300,12 +310,9 @@ Index 0 is reserved for communication with ZDO, and index 255 is considered the 
 For future use, the alliance reserved the index range from 241 to 254.
 
 \subsubsection{Zigbee Device Object}
-Zigbee device object interfaces the application objects, the device profile, and the APS.
-For the application objects, it provides device control and network functions.
-Other functions are address management of the device, discovery, binding, and security. (Wang et al., 2016)
+Zigbee device object interfaces the application objects, the device profile, and the APS. For the application objects, it provides device control and network functions. Other functions are address management of the device, discovery, binding, and security. (Wang et al., 2016)
 
 The ZDO is responsible for initializing the APS sublayer, the NWK layer, and the Security Service Provider. Also, the ZDO defines the role of the device within a ZigBee network.
-
 \subsection{Cluster Library}
 
 %\url{https://www.academia.edu/73196763/A_Survey_of_ZigBee_Wireless_Sensor_Network_Technology_Topology_Applications_and_Challenges}

@@ -1,6 +1,43 @@
 \chapter{Multi-Protocol}
-bla-bla
+\label{chap:multiprot}
+In this chapeter I will define the multi-protocol networking in IoT technologies.
+
+\autoref{sec:multi:ov} will give a brief overview of the technology.
+\autoref{sec:multi:dc} will showcase some configurations and \autoref{sec:multi:imp} will introduce some implementations that are available.
 
 \section{Overview}
+\label{sec:multi:ov}
+As the IoT market continues to evolve and grow, developers need more integrated options for wireless connectivity. (NXP, website) With multiprotocol-enabled wireless solutions reduce design and development costs and open the path for IoT convergence where applications can leverage the best aspects of multiple connectivity standards.
+
+As the current generation of chips on the market, a multiprotocol implementation usually contains some kind of operating system or a simple scheduler to manage concurrency between the protocols.
+
+Within multiprotocol, the industry specifies different types. In a simple switched multiprotocol, the device's bootloader can switch between two or more protocols. This method does not require an operating system, as the switching is not that dynamic. In switched mode, only one protocol can be loaded at any given time during operation. Figure 3 shows the operation of switched mode.
+
+The other main type is concurrent multiprotocol. This mode allows the device to run multiple protocols on a single radio. The primary features of this type of solution are:
+Switch between applications
+Manage and configure the physical layer
+Protocol prioritization
+Real-time scheduling
+
+These features usually call for an operating system. Available from the market, manufacturers do not create this operating system from the ground up. Rather they create a specialized Real-Time Operating System (RTOS).
+
+Some manufacturers offer Linux-based solutions as well as embedded OS. With more powerful and capable embedded computers emerging on the market, devices can run more general operating systems such as Linux. These devices have the capacity to run multiple protocols alongside the OS and an additional IP stack as well. Devices suitable for this workload are being used as gateways or translators between protocols in the IoT realm.
+
+\section{Device configuration}
+\label{sec:multi:dc}
+As I have introduces the main protocols in \autoref{chap:wireless}, I have not mentioned what configurations these can be used. All stacks have a clear separation of what each layer does. This creates a possibility of different manufacturers can implement different layers.
+
+Most manufacturers extend beyond their System-on-Chip (SoC) design and allow more interfaces so their network device to improve reusability. Figure 4 shows different approaches used in the market.
+
+The SoC approach provides all stack-functionality and application-layer components within a single chip. With SoC, developers can write the most optimized solutions with the lowest power consumption. But the whole application is constrained to the actual hardware limitations.
+
+In a Network Co-Processor (NCP) approach, the chip only runs the functions necessary for networking. The most common configuration is that the chip communicates with a second device called the "host" processor via either SPI or UART. The host is responsible for the application management.
+ 
+A Radio Co-Processor (RCP) approach is similar to the NCP. The chip only runs the physical layers of the stacks while the host runs the application and network layers. With this architecture integration of multiple protocols that use the same radio band can be better achieved.
 
 \section{Implementations}
+\label{sec:multi:imp}
+\subsection{Dynamic Multi-protocol Manager - Texas Instruments}
+\subsection{Dynamic Multiprotocol - Silicon Labs}
+\subsection{CPCd - Silicon Labs}
+\subsection{Multi-Protocol Service Layer - Nordic Semiconductor}
