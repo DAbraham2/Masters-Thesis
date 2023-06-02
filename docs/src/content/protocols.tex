@@ -12,24 +12,25 @@ Zigbee in \autoref{sec:zig}, and finally Thread/OpenThread in \autoref{sec:ot}.
 \section{Bluetooth Low Energy}
 \label{sec:ble}
 
-Bluetooth is a low-power, short-range wireless technology developed initially for replacing cables when
-connecting devices like mobile phones, headsets, and computers.
-It has since evolved into a wireless standard for connecting electronic devices to
-form Personal Area Networks (PANs) and ad hoc networks. \cite{Dideles03}
+Bluetooth is a low-power, short-range wireless technology developed initially for replacing cables when connecting devices like mobile phones, headsets, and computers. It has since evolved into a wireless standard for connecting electronic devices to form Personal Area Networks (PANs) and ad hoc networks. \cite{Dideles03}
 
 Bluetooth is one of the most popular commodity radios for wireless devices.
 As a representative of the frequency hopping spread spectrum radios,
 it is a natural alternative to broadcast radios in the context of sensor networks. \cite{Leopold03}
 
+The Bluetooth SIG specifies three (3) different types of devices, hence three specifications.
+Bluetooth Classic consists of Basic Rate and Enhanced Data Rate capable devices.
+On the other hand, Bluetooth Low Energy needs Low Energy capabilities.
+
+Since BLE and Bluetooth Classic has different controller layer, they are not compatible with each other.
+This thesis will focus mainly on Bluetooth Low Energy (BLE) due to its
+similarity in functionality and utilization to Zigbee and Thread/OpenThread.
+
+
 The Bluetooth Special Interest Group (SIG) oversees
 the Bluetooth standard and has a membership of over 38,000 companies as of 2023. \cite{bt_history}
 The initial specification was made available in 1999.
 Since then, the SIG released five core specifications, 5.4 being the latest adoption in 2023. \cite{bt_spec_history}
-
-This thesis will focus mainly on Bluetooth Low Energy due to
-its similarity in functionality and utilization to Zigbee and Thread/OpenThread.
-
-blab bla.\cite{ble_primer23}.
 
 \subsection{Introcution}
 \label{ble:int}
@@ -39,6 +40,12 @@ its bigger brother, classic Bluetooth. In reality, BLE has an entirely different
 Initially known as Wibree and created by Nokia, the Bluetooth SIG ultimately embraced the technology.
 The focus was to develop a radio standard with the lowest possible power consumption,
 specifically optimized for low cost, low bandwidth, low power, and low complexity. \cite{Townsend14}
+
+BLE uses frequency hopped spread spectrum (FHSS), just like Bluetooth Classic,
+to limitate transmission errors in the radio band.
+The physical layer uses a 2 MHz bandwidth.
+From Core Specification 5, BLE has a theoretical maximum throughput of 2 Mbps and
+a maximum output power of 100 mW (20 dBm).
 
 \subsection{Architecture}
 \label{ble:ow}
@@ -61,13 +68,11 @@ These hold all the responsibility for operating the physical radio channel.
 Also, these layers are specialized by the LE standard keeping the Host
 layer more-or-less the same as Bluetooth Classic.
 
-
 A device address and an address type identify a device.
 An address type indicates that an address can be either public or random.
 Both are 48 bits long.
 A device shall use at least one type of device address but can use
 both simultaneously.
-Public and random addresses are explained under the Link layer in section 2.4.
 
 In BLE, Generic Access Profile (GAP) defines specific roles for each device.
 These roles are: broadcaster, observer, peripheral, and central.
@@ -75,9 +80,10 @@ A device may support multiple roles but only one at a given time.
 Each role specifies the requirements for the underlying Controller.
 \autoref{ble:gap} explains GAP in more detail.
 
-
-\subsection{Physical layer}
-\label{ble:phy}
+\subsection{LE Controller}
+\label{ble:controller}
+\subsubsection{Physical layer}
+\label{ble:controller:phy}
 
 The physical layer (PHY) contains all necessary analog communication circuitry.
 The radio uses the 2.4 GHz ISM band to communicate.
@@ -94,13 +100,16 @@ broadcast messages; the remaining 37 are known as general-purpose channels.
     \label{fig:ble_phy}
 \end{figure}
 
+The transmitter can use a maximum power of 100 mW.
+The LE Power Control Request can manage the power settings if a device supports this feature.
+
 J. Yin et al. \cite{Yin:19} showed that from Core Specification 5, a novel
 modulation scheme was introduced in the standard.
 This feature allowed radio modules to use up all 2 MHz of bandwidth,
 thus significantly increasing the maximum throughput.
 
-\subsection{Link layer}
-\label{ble:link}
+\subsubsection{Link layer}
+\label{ble:controller:link}
 Part B of the Core Specification's volume six (Low Energy Controller volume)
 defines the Bluetooth Low Energy Link Layer's specification.
 
@@ -126,36 +135,12 @@ This interface consists of multiple access schemes, device discovery,
 and Link Layer connection methods.
 
 In the case of multiple state-machine instances, the first version of the
-specification (4.0) prohibited certain combinations of states (and roles).
-Table 1 specifies the allowed and prohibited state machine combinations.
+specification (\cite{bt40}) prohibited certain combinations of states (and roles).
+\autoref{tab:llstate_limit} specifies the allowed and prohibited state machine combinations.
 From the release of Core Specification 5.2, an implementation may support
 any combination of states and roles. The only criterion is that any two (2)
 devices shall not have more than one connection between them. \cite{bt52}
 
-
-\subsubsection{Physical channel selection}
-\label{ble:link:sel}
-After the introduction in Core Specification 5, there are two algorithms for
-channel selection.
-The initial algorithm (called Channel Selection Algorithm \#1) only supports
-channel selection for connection events.
-Algorithm \#2 can be used for connection and periodic advertising events.
-J. Yin et al. showed that this update significantly enhanced the robustness
-of the protocol. (Yin, 2019)
-
-\subsubsection{Link Layer Control protocol}
-\label{ble:link:llcp}
-The Link Layer Control protocol (LLCP) is used to control and
-negotiate aspects of the operation of a connection between two Link Layers.
-This includes procedures for control of the connection, starting and pausing
-encryption, and other link procedures. \cite{bt40}
-
-One of the most significant procedures is the Channel Map Update Procedure.
-This ensures that upon a physical channel update (initiated by
-frequency hopping), both the master and the slave stay in sync
-with the physical channel index.
-
-% \usepackage{multirow}
 \begin{table}[]
     \begin{tabular}{lllllll}
     \multicolumn{2}{l}{\multirow{2}{*}{Multiple State and Role}}  & \multirow{2}{*}{Advertising} & \multirow{2}{*}{Scanning} & \multirow{2}{*}{Initiating} & \multicolumn{2}{l}{Connection} \\
@@ -168,59 +153,136 @@ with the physical channel index.
     \end{tabular}
     \caption{Link Layer State Machine limitations (obsolate)}
     \label{tab:llstate_limit}
-    \end{table}
+\end{table}
+
+After the introduction in Core Specification 5, there are two algorithms for
+channel selection.
+The initial algorithm (called Channel Selection Algorithm \#1) only supports
+channel selection for connection events.
+Algorithm \#2 can be used for connection and periodic advertising events.
+J. Yin et al. showed that this update significantly enhanced the robustness
+of the protocol. \cite{Yin:19}
+
+The Link Layer Control protocol (LLCP) is used to control and
+negotiate aspects of the operation of a connection between two Link Layers.
+This includes procedures for control of the connection, starting and pausing
+encryption, and other link procedures. \cite{bt40}
+
+One of the most significant procedures is the Channel Map Update Procedure.
+This ensures that upon a physical channel update (initiated by
+frequency hopping), both the master and the slave stay in sync
+with the physical channel index.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=100mm, keepaspectratio]{figures/ble_aip_uncoded.png}\\\vspace{5mm}
+    \includegraphics[width=100mm, keepaspectratio]{figures/ble_aip_coded.png}
+    \caption{AIP formats. (Source: \cite{bt52})}
+    \label{fig:ble:aip_formats}
+\end{figure}
+
+BLE devices communicate via air interface packets.
+The specification differentiates two different formats; uncoded and coded packets.
+\autoref{fig:ble:aip_formats} shows the differences between the formats.
+Higher-level protocols are transmitted in the PDU field.
+As \autoref{fig:ble:aip_formats} shows, the largest data transmitted in a single packet is limited to 258 bytes.
 
 \subsection{Host Controller Interface}
-The Host Controller Interface (HCI) connects the Controller (low-level)
-and Host (high-level) parts of the BLE stack.
-It contains a technology-independent logical command interface structure
-(HCI driver) and a Host Controller Transport Layer.
-The HCI provides a uniform interface for accessing a Bluetooth Controller's
-capability.
+\label{ble:hci}
+The Host Controller Interface (HCI) connects the Controller (low-level) and Host (high-level) parts of the BLE stack.
+It contains a technology-independent logical command interface structure (HCI driver) and a Host Controller Transport Layer.
+The HCI provides a uniform interface for accessing a Bluetooth Controller's capability.
 
-According to the standard, separating was necessary to keep the HCI driver
-independent of the underlying transport technology.
-Currently, in the latest standard (Core Specification 5.4), there are four (4)
-different technologies defined for the transport layer:
+According to the standard, separating was necessary to keep the HCI driver independent of the underlying transport technology.
+Currently, in the latest standard (Core Specification 5.4), there are four (4) different technologies defined for the transport layer:
 UART, USB, Secure Digital (SD), and Three-wire UART.
 
-\subsection{Logical Link Control and Adaption Protocol}
+The HCI uses a command-response communication format.
+The Host sends commands to the Controller, and the Controller responds in the form of events.
+If the Controller cannot execute the command immediately, it shall notify the Host that it received it.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=100mm, keepaspectratio]{figures/hci_command_msg.png}
+    \caption{HCI command message structure. (Source: \cite{bt5})}
+    \label{fig:ble:hci_command_msg}
+\end{figure}
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=100mm, keepaspectratio]{figures/hci_event_msg.png}
+    \caption{HCI command message structure. (Source: \cite{bt5})}
+    \label{fig:ble:hci_event_msg}
+\end{figure}
+
+\autoref{fig:ble:hci_command_msg} and \autoref{fig:ble:hci_event_msg} show the data formats used in HCI communication.
+
+\subsection{Host}
+\label{ble:host}
+\subsubsection{Logical Link Control and Adaption Protocol}
+\label{ble:host:l2cap}
 The Bluetooth logical link control and adaptation protocol (L2CAP)
 supports higher-level protocol multiplexing, packet segmentation and
 reassembly, and the conveying of quality of service information. 
 
 Packet segmentation is necessary because data must fit into 27-byte maximum
-payload size of the BLE packets on the transmit side. (Townsend, 14)
+payload size of the BLE packets on the transmit side. \cite{Townsend14}
 On the reception path, this procedure has to be reversed.
 
 The Bluetooth logical link control and adaptation protocol (L2CAP) supports
 higher-level protocol multiplexing, packet segmentation and reassembly,
 and the conveying of quality of service information.
 The protocol state machine, packet format, and composition are described
-in this document. (Townsend, 14)
+in this document. \cite{Townsend14}
 
+\subsubsection{Attribute Protocol}
+\label{ble:host:att}
+The Attribute Protocol (ATT) defines the peer-to-peer communication scheme. It defines client and server roles during communication. The ATT client communicates to an ATT server on a remote device. This communication uses a dedicated fixed L2CAP channel created by the initial connection.
 
-\subsection{Generic Access Profile}
-\label{ble:gap}
-The Generic Attribute Profile (GATT) builds on the Attribute Protocol (ATT)
-and adds a hierarchy and data abstraction model on top of it.
-In a way, it can be considered the backbone of BLE data transfer because
-it defines how data is organized and exchanged between applications.
+The client can send commands, requests, and confirmations to a server. On the reversed path, the server can only send responses, notifications, and indications back to a client, meaning that a client can read and write the values of attributes on a device with an ATT server.
 
+\subsubsection{Generic Access Profile}
+\label{ble:host:gap}
 
+The Generic Access Profile (GAP) defines common functionalities all Bluetooth devices use.
+These functionalities, such as modes and access procedures, are used by transports, protocols, and application profiles.
+The GAP includes device discovery, connection modes, security, authentication, association models, and service discovery.
 
-\subsection{Generic Attibute Profile}
-\label{ble:gatt}
+\subsubsection{Generic Attribute Profile}
+\label{ble:host:gatt}
+The Generic Attribute Profile (GATT) builds on the Attribute Protocol (ATT) and adds a hierarchy and data abstraction model on top of it.
+It can be considered the backbone of BLE data transfer because it defines how data is organized and exchanged between applications.
+
+The GATT also provides an interface for discovering, reading, writing, and indicating service characteristics and attributes.
+
+The Bluetooth SIG specifies over 250 standard profiles that must be supported to facilitate interoperability between developers. \cite{gatt_sup}
 
 \section{IEEE 802.15.4}
 \label{sec:15_4}
 
-This standard operates at 250kbps in the 2.4 GHz band and 40kbps/20kbps in the 900/868 MHz bands (Sub-GHz).
+The IEEE 802.15.4 standard defines the physical layer (PHY) and medium access control (MAC)
+sublayer specifications for low-rate wireless personal area networks (LR-WPANs). \cite{kozlowski:2017}
+LR-WPANs are designed to support low-power communication between devices
+with limited resources and short-range communication requirements.
+
+The standard provides a framework for building wireless networks with low data rates, low power consumption, and low cost.
+It operates in the unlicensed Industrial, Scientific, and Medical (ISM) bands, such as the 2.4 GHz band used by Wi-Fi
+and Bluetooth devices, as well as the 868 MHz and 915 MHz bands.
+It supports a maximum data rate of 250 kbps.
 
 \subsection{Physical layer (PHY)}
 
 \subsection{Medium Access Control Layer (MAC)}
-The MAC layer describes essential message handling and congestion control. This layer includes mechanisms for forming and joining a network, a CSMA mechanism, and a link layer for retires and acknowledgment for reliable communication. (ug103-02)
+The MAC layer describes essential message handling and congestion control.
+This layer includes mechanisms for forming and joining a network, a CSMA-CA mechanism,
+and a link layer for retires and acknowledgment for reliable communication. (ug103-02)
+
+For device identification, the layer uses 16-bit short addresses and 64-bit extended addresses.
+Devices can be assigned a unique short address by the network coordinator to enable efficient addressing in the network.
+
+In MAC, two roles are defined: the network coordinator and the device.
+The network coordinator initiates and manages the network, while devices can join the network
+and communicate with the coordinator or other devices.
 
 
 \section{Zigbee}
