@@ -1,10 +1,65 @@
 \chapter{Software testing}
 \label{chap:testing}
 \section{Overview}
+A lot of different standard bodies and writers have defined software testing.
+The International Software Testing Qualifications Board (ISTQB) defines software testing
+as follows: "The process consisting of all lifecycle activities, both static and
+dynamic, concerned with planning, preparation, and evaluation of software products and
+related work products; to determine that they satisfy specified requirements,
+to demonstrate that they are fit for purpose, and to detect defects." \cite{ctfl_syllabus:2023}
 
+Testing can have different goals, such as getting information about the quality,
+supporting decision-making, detecting defects, or preventing defects.
+In the process, there are two different approaches: test-as-information-provider
+and test-as-quality-accelerant.
+
+In the test-as-information-provider approach, testing is usually executed last in
+development.
+There are independent test teams and separate test phases with fixed release cycles.
+Meanwhile, test-as-quality-accelerant follows a test-always strategy.
+In the latter approach, testers are quality assistants, and developers
+write tests alongside testers.
+This allows shorter and more fine-grade releases.
 \section{Testing levels}
 
+According to ISTQB, test levels are groups of test activities that are organized
+and managed together.
+Each test level is an instance of the test process performed concerning
+software at a given stage of development, from individual components to complete
+systems or, where applicable, system of systems. \cite{ctfl_syllabus:2023}
+
+The ISTQB differentiates the following levels: component (unit), component integration (integration), system, system integration, and acceptance testing. Unit testing focuses on a single component in isolation and is usually performed by developers. Integration testing focuses on testing the interfaces and interactions between components. System tests focus on the overall behavior and capabilities of the entire system or product.
+
+Whittaker et al. show \cite{google:2012} a different approach to test levels used
+in Google.
+Test levels are defined in execution time; see \autoref{tab:test:levels:google}.
+Google uses three different levels: small, medium, and large tests.
+Small tests cover a single unit of code in a faked environment.
+Medium tests cover two or more interacting features.
+Large tests represent real user scenarios and use real user data sources.
+
+\begin{table}
+    \begin{tabular}{|| c c c c ||}
+        \hline
+        & Small tests & Medium tests & Large tests\\
+        Time Goals & $\leq$ 100 ms & $\leq$ 1 sec & As quickly as possible \\
+        Time Limits & Kill target after 1 minute & Kill target after 5 minutes & Kill target after 1 hour \\
+        \hline
+    \end{tabular}
+    \caption{Google's test levels. (Source: \cite{google:2012})}
+    \label{tab:test:levels:google}
+\end{table}
+
 \section{Test types}
+Test types are groups of test activities related to specific quality characteristics, and most of those test activities can be performed at every test level. \cite{ctfl_syllabus:2023}
+
+Common types used in the industry are functional, non-functional, and regression testing.
+
+Functional testing evaluates the functions that a system (or component) should perform. The main objective is to check the functional completeness and correctness of the system.
+
+In Non-functional testing, the goals are to test how well the system behaves. Commonly used software quality characteristics are defined by ISO/IEC 25010 standard. These characteristics are performance, compatibility, usability, reliability, security, maintainability, and portability. Non-functional tests may need specific test environments.
+
+Regression testing confirms that changes in the codebase did not inject new defects into the functionality. According to ISTQB, performing an impact analysis is advisable to optimize the extent of the regression testing.
 
 \section{Model-based test generation}
 
