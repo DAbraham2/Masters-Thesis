@@ -28,6 +28,7 @@ jobs:
       - name: Unit tests
         run: |
           echo 'Haha not now'
+          ls -la .
       - name: Ruff analyis
         run: |
           pip install ruff
