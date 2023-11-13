@@ -34,9 +34,11 @@ jobs:
         run: |
           pip install ruff
           ruff check src/gecko_spec_test -o ruff_report.json --output-format=json -v
+        continue-on-error: true
+      - name: Ruff conversion
+        run: |
           less ruff_report.json
           python src/tools/relative_report_fixer.py
-        continue-on-error: true
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
