@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - test-branch
+      - literature-review
   pull_request:
     branches:
       - main
@@ -28,9 +29,7 @@ jobs:
         OUT_DIR=out/
         mkdir -p $OUT_DIR
         {
-          echo '- [`[XeLaTeX HU]`](thesis-xelatex-hu.pdf) | [`[PDFLaTeX HU]`](thesis-pdflatex-hu.pdf) | [`[LuaLaTeX HU]`](thesis-lualatex-hu.pdf)'
-          echo '- [`[XeLaTeX EN]`](thesis-xelatex-en.pdf) | [`[PDFLaTeX EN]`](thesis-pdflatex-en.pdf) | [`[LuaLaTeX EN]`](thesis-lualatex-en.pdf)'
-          echo '- [`[XeLaTeX Duplex]`](thesis-xelatex-duplex.pdf) | [`[PDFLaTeX Duplex]`](thesis-pdflatex-duplex.pdf) | [`[LuaLaTeX Duplex]`](thesis-lualatex-duplex.pdf)'
+          echo '- [`[Thesis link]`](daniel_abraham_masters_thesis.pdf)'
           echo "- Commit: [$GITHUB_SHA](https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA)"
         } > $OUT_DIR/README.md
         # copy PDF outputs from `pdf` folder
@@ -41,4 +40,4 @@ jobs:
         branch: gh-pages
         folder: out
         single-commit: true
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/literature-review')

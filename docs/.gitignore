@@ -3,6 +3,8 @@ thesis-pdflatex*.pdf
 thesis-xelatex*.pdf
 thesis-lualatex*.pdf
 
+src/*.pdf
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
