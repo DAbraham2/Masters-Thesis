@@ -1,0 +1,6 @@
+class OtUpCli:
+    ...
+
+
+class ZigbeeBleDmpCli:
+    ...
