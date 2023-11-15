@@ -27,9 +27,7 @@ jobs:
           pip install -r src/gecko_spec_test/test-requirements.txt
       - name: Unit tests
         run: |
-          echo 'Haha not now'
-          ls -la .
-          pwd
+          pytest --cov=src/gecko_spec_test --cov-report xml --cov-branch src/gecko_spec_test/unit_tests
       - name: Ruff analyis
         run: |
           pip install ruff
