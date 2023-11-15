@@ -17,7 +17,7 @@ class TelnetTransport(BaseTransport):
     def send(self, msg: str) -> None:
         self._connection.write(bytes(msg, 'ascii'))
 
-    def send_and_expect(self, msg: str, expect: str) -> bool:
+    def send_and_expect(self, msg: str, expect: str) -> str:
         raise NotImplementedError()
 
     def register_handler(self, handler: Callable[[], None], expect: str) -> int:

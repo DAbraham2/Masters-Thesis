@@ -1,8 +1,14 @@
-very_long_Filename = 'abnsdégfubaéwerguiasdnvgipauwefbipauszg1i24gbriezbfpaisdfihké32bvf876xcgyYVB341o7r46fgcvSLDUZF'
+from gst_utils.logging import get_logger
+
+logger = get_logger('gst_main')
 
 
 def __main() -> None:
-    print('henlo')
+    logger.debug('dbg')
+    logger.info('fyi')
+    logger.warning('warn')
+    logger.critical('crit')
+    logger.error('fucked up')
 
 
 if __name__ == '__main__':

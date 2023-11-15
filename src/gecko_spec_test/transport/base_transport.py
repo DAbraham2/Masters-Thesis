@@ -14,16 +14,16 @@ class BaseTransport(Protocol):
         """
         ...
 
-    def send_and_expect(self, msg: str, expect: str) -> bool:
+    def send_and_expect(self, msg: str, expect: str) -> str:
         """
         Send a message to a device and expect an output
         :param msg: content of the message
         :param expect: expected string
-        :return: Returns `True` if expect is found. Else `False`.
+        :return: Returns the expected line
         """
         ...
 
-    def register_handler(self, handler: Callable[[], None], expect: str) -> int:
+    def register_handler(self, handler: Callable[[str, str], None], expect: str) -> int:
         """
         Append an event handler to a transport stream.
         :param expect: expected event to run handler on
