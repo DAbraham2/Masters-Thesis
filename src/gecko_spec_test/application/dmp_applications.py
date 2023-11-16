@@ -11,8 +11,9 @@ class DmpApplication(MinimalBleDevice, BleUtils):
         self._ble_state = BleState.STANDBY
 
     def _init_handlers(self):
-        hs = self._thread.get_handlers()
-        for k, v in hs:
+        for k, v in self._thread.get_handlers():
+            self._transport.register_handler(v, k)
+        for k, v in self._ble.get_handlers():
             self._transport.register_handler(v, k)
 
     def start_scanning(self) -> bool:
@@ -56,4 +57,4 @@ class DmpApplication(MinimalBleDevice, BleUtils):
         return self._ble_state
 
     def get_address(self) -> bytes:
-        return b'B00B5'
+        return self._ble.get_address(self._transport)

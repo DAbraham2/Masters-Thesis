@@ -153,7 +153,7 @@ class ZigbeeBleDmpCli:
     ):
         ...
 
-    def get_address(self, transport: BaseTransport):
+    def get_address(self, transport: BaseTransport) -> bytes:
         ...
 
     def hello(self, transport: BaseTransport):
