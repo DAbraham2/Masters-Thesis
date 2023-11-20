@@ -1,3 +1,4 @@
+import time
 from threading import Event
 from typing import Callable, Optional
 
@@ -116,18 +117,60 @@ class OtUpCli:
         ...
 
 
+def _bytes_from_ble_address(original: str) -> bytes:
+    """
+    Turns ble addresses to bytes
+    :param original: given address `example: [34 25 B4 A9 4A 66]`
+    :return:
+    """
+    cleaned = ''
+    if original.removeprefix('['):
+        cleaned = original.removeprefix('[').removesuffix(']').strip()
+
+    cleaned = cleaned.lower()
+    return bytes.fromhex(cleaned)
+
+
+def _ble_address_from_bytes(original: bytes) -> str:
+    """
+    Turns bytes to cli compatible hex
+    :param original:
+    :return:
+    """
+    return f'{{{original.hex()}}}'
+
+
 class ZigbeeBleDmpCli:
     def __init__(self):
         self.logger = get_logger(__name__)
         self.__handlers = {
             'BLE address:': self._handle_address,
+            'BLE connection opened': self._handle_conn_opened,
         }
+        self._peripheral: bool = False
+        self._in_scan: bool = False
+        self._scan_result: set[bytes] = set()
+        self._address: bytes = bytes(6)
 
     def get_handlers(self) -> dict[str, Callable[[str, str], None]]:
         return self.__handlers
 
-    def _handle_address(self, actual, expected) -> None:
-        ...
+    def _handle_address(self, actual: str, expected: str) -> None:
+        """
+        Actual example: `BLE address: [34 25 B4 A9 4A 66]`
+        :param actual:
+        :param expected:
+        :return:
+        """
+        data = actual.removeprefix(expected).strip()
+        match self._in_scan:
+            case True:
+                self._scan_result.add(_bytes_from_ble_address(data))
+            case False:
+                self._address = _bytes_from_ble_address(data)
+
+    def _handle_conn_opened(self, actual, expected) -> None:
+        self._peripheral = True
 
     def enter_connectable(
         self,
@@ -137,24 +180,45 @@ class ZigbeeBleDmpCli:
         discovery_mode: int,
         connectable_mode: int,
     ):
-        ...
+        transport.send_and_expect(
+            f'plugin ble gap set-mode {adv_handle} {discovery_mode} {connectable_mode}',
+            expect='success',
+        )
 
-    def stop_advertise(self, transport: BaseTransport, *, handle: int):
-        ...
+    @staticmethod
+    def stop_advertise(transport: BaseTransport, *, handle: int):
+        transport.send_and_expect(
+            f'plugin ble gap stop-advertising {handle}', 'success'
+        )
 
     def start_scan(self, transport: BaseTransport, *, discovery_mode: int):
-        ...
+        if discovery_mode < 0 or discovery_mode > 2:
+            raise ValueError('discovery_mode shall be between 0 and 2')
+        self._scan_result = set()
+        self._in_scan = True
+        transport.send_and_expect(
+            f'plugin ble gap start-scan {discovery_mode}', 'success'
+        )
 
     def stop_scan(self, transport: BaseTransport):
-        ...
+        transport.send_and_expect('plugin ble gap stop-scan', 'success')
+        self._in_scan = False
 
     def scan_config(
         self, transport: BaseTransport, *, mode: int, interval: int, window: int
     ):
-        ...
+        raise NotImplementedError()
 
     def get_address(self, transport: BaseTransport) -> bytes:
-        ...
+        if self._address != bytes(6):
+            return self._address
 
-    def hello(self, transport: BaseTransport):
-        ...
+        transport.send('plugin ble get address')
+        for _ in range(10):
+            if self._address != bytes(6):
+                return self._address
+            time.sleep(0.4)
+
+    @staticmethod
+    def hello(transport: BaseTransport):
+        transport.send_and_expect('plugin ble hello', 'success')

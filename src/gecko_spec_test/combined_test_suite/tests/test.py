@@ -1,4 +1,24 @@
+from gst_utils.logging import get_logger
+from scenario.mp import get_mp_scenario
+
+
+def setUpRun():
+    logger = get_logger(__name__)
+    logger.info('started setup')
+    get_mp_scenario().config()
+
+
+def tearDownRun():
+    logger = get_logger(__name__)
+    get_mp_scenario().close()
+
+    logger.info('finished testing')
+
+
 class OtBle:
+    def __init__(self):
+        self.logger = get_logger(__name__)
+
     def v_child_adv(self):
         pass
 
@@ -85,6 +105,9 @@ class OtBle:
 
 
 class ZigBle:
+    def __init__(self):
+        self.logger = get_logger(__name__)
+
     def v_diconnected_standby(self):
         pass
 
@@ -168,6 +191,9 @@ class ZigBle:
 
 
 class SingleZigbee:
+    def __init__(self):
+        self.logger = get_logger(__name__)
+
     def v_disconnected(self):
         pass
 
@@ -224,6 +250,9 @@ class SingleZigbee:
 
 
 class SingleThread:
+    def __init__(self):
+        self.logger = get_logger(__name__)
+
     def v_thread_child(self):
         pass
 
@@ -271,6 +300,9 @@ class SingleThread:
 
 
 class SingleProt:
+    def __init__(self):
+        self.logger = get_logger(__name__)
+
     def v_init(self):
         pass
 
@@ -300,6 +332,9 @@ class SingleProt:
 
 
 class SingleBle:
+    def __init__(self):
+        self.logger = get_logger(__name__)
+
     def v_Conn_Initiate(self):
         pass
 

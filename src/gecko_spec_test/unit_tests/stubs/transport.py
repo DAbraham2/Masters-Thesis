@@ -25,7 +25,7 @@ class MockedTransport(BaseTransport):
             case default:
                 self.logger.warning('Command %s not implemented...', default)
 
-    def send_and_expect(self, msg: str, expect: str) -> str:
+    def send_and_expect(self, msg: str, expect: str, *, timeout=1) -> str:
         return super().send_and_expect(msg, expect)
 
     def register_handler(self, handler: Callable[[str, str], None], expect: str) -> int:
