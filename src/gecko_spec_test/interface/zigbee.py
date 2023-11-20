@@ -1,13 +1,17 @@
 from typing import Protocol
+from plugins.cli.zigbeee import ZigbeeStatus
 
 
 class ZigbeeUtils(Protocol):
     def get_node_id(self) -> bytes:
         ...
 
+    def get_zig_state(self) -> ZigbeeStatus:
+        ...
+
 
 class ZigbeeDevice(Protocol):
-    def join_network(self):
+    def join_network(self, channel: int):
         ...
 
     def leave_network(self):
@@ -15,7 +19,7 @@ class ZigbeeDevice(Protocol):
 
 
 class ZigbeeCoordinator(Protocol):
-    def create_network(self):
+    def create_network(self, channel: int, pan_id: bytes):
         ...
 
 

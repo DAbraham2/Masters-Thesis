@@ -92,6 +92,9 @@ class ZigbeeCore:
     def info(transport: BaseTransport):
         transport.send('info')
 
+    def get_state(self) -> ZigbeeStatus:
+        return self._status
+
 
 def _set_masks(transport: BaseTransport, channel: int) -> None:
     transport.send_and_expect('plugin network-steering mask set 1 0', 'Set')

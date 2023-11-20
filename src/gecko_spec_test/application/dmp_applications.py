@@ -1,19 +1,29 @@
 from transport import BaseTransport
 from interface.ble import MinimalBleDevice, BleUtils, BleState
+from interface.zigbee import ZigbeeDevice, ZigbeeThroughputable, ZigbeeUtils
 from plugins.soc import OtUpCli, ZigbeeBleDmpCli
+from plugins.cli.zigbeee import ZigbeeCore, ZigbeeStatus
+import plugins.cli.zigbeee as zig_cli
 
 
-class DmpApplication(MinimalBleDevice, BleUtils):
+class DmpApplication(
+    MinimalBleDevice, BleUtils, ZigbeeUtils, ZigbeeDevice, ZigbeeThroughputable
+):
     def __init__(self, transport: BaseTransport):
         self._transport = transport
         self._thread = OtUpCli()
         self._ble = ZigbeeBleDmpCli()
         self._ble_state = BleState.STANDBY
+        self._zigbee = ZigbeeCore()
+
+        self._init_handlers()
 
     def _init_handlers(self):
         for k, v in self._thread.get_handlers():
             self._transport.register_handler(v, k)
         for k, v in self._ble.get_handlers():
+            self._transport.register_handler(v, k)
+        for k, v in self._zigbee.get_handlers():
             self._transport.register_handler(v, k)
 
     def start_scanning(self) -> bool:
@@ -58,3 +68,21 @@ class DmpApplication(MinimalBleDevice, BleUtils):
 
     def get_address(self) -> bytes:
         return self._ble.get_address(self._transport)
+
+    def get_node_id(self) -> bytes:
+        return self._zigbee.get_state().node_id
+
+    def get_zig_state(self) -> ZigbeeStatus:
+        return self._zigbee.get_state()
+
+    def join_network(self, channel: int):
+        zig_cli.join_network(self._transport, channel)
+
+    def leave_network(self):
+        zig_cli.leave_network(self._transport)
+
+    def start_throughput(self) -> bool:
+        raise NotImplementedError()
+
+    def wait_for_results(self) -> float:
+        raise NotImplementedError()
