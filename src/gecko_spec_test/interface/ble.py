@@ -19,6 +19,9 @@ class BleUtils(Protocol):
     def get_address(self) -> bytes:
         ...
 
+    def say_hello(self) -> None:
+        ...
+
 
 class MinimalBleDevice(Protocol):
     def start_scanning(self) -> bool:

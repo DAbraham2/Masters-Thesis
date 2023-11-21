@@ -1,4 +1,6 @@
+from combined_test_suite.tests.utilities import address_in_scan
 from gst_utils.logging import get_logger
+from interface.ble import BleState
 from scenario.mp import get_mp_scenario
 
 
@@ -13,6 +15,10 @@ def tearDownRun():
     get_mp_scenario().close()
 
     logger.info('finished testing')
+
+
+dut_connection: int = -1
+helper_connection: int = -1
 
 
 class OtBle:
@@ -302,89 +308,115 @@ class SingleThread:
 class SingleProt:
     def __init__(self):
         self.logger = get_logger(__name__)
+        self.dut = get_mp_scenario().dut
+        self.ble_hello = False
+        self.zig_state = None
+        self.ot_state = ''
 
     def v_init(self):
-        pass
+        self.logger.info('Test started')
 
-    def v_singleBle(self):
-        pass
+    def v_single_ble(self):
+        assert self.ble_hello is True
 
-    def v_singleTh(self):
-        pass
+    def v_single_thread(self):
+        assert self.ot_state != ''
 
-    def v_singleZig(self):
-        pass
+    def v_single_zig(self):
+        assert self.zig_state.node_type is not None
 
     def e_factory_reset(self):
-        pass
+        self.dut.factory_reset()
+        self.ble_hello = False
 
     def e_reset(self):
-        pass
+        self.dut.factory_reset()
+        self.ble_hello = False
 
     def e_start_ble(self):
-        pass
+        self.dut.say_hello()
+        self.ble_hello = True
 
     def e_start_th(self):
-        pass
+        self.ot_state = self.dut.get_thread_state()
 
     def e_start_zig(self):
-        pass
+        self.zig_state = self.dut.get_zig_state()
 
 
 class SingleBle:
     def __init__(self):
         self.logger = get_logger(__name__)
+        self.dut = get_mp_scenario().dut
+        self.helper = get_mp_scenario().ble_helper
 
-    def v_Conn_Initiate(self):
-        pass
+    def v_conn_initiate(self):
+        self.logger.warning('Not implemented yet...')
 
     def v_advertising(self):
-        pass
+        assert self.dut.get_state() == BleState.ADVERTISING
+        addr = self.dut.get_address()
+        result = self.helper.expect_scan(addr, timeout=0.5)
+
+        assert result is True
 
     def v_connection_as_central(self):
-        pass
+        self.logger.warning('Not implemented yet...')
 
     def v_connection_as_peripheral(self):
-        pass
+        assert self.dut.get_state() == BleState.CONNECTION
+        assert helper_connection >= 0
 
     def v_controller_init(self):
-        pass
+        self.logger.debug('Whatever happens here...')
 
     def v_scanning(self):
-        pass
+        assert BleState.SCANNING == self.dut.get_state()
+        addr = self.helper.get_address()
+        found_helper = address_in_scan(addr, self.dut.scan_results())
+
+        assert found_helper is True
 
     def v_standby(self):
-        pass
+        assert BleState.STANDBY == self.dut.get_state()
 
     def e_cancel(self):
-        pass
+        self.dut.stop_advertising()
 
-    def e_connec_to_dut(self):
-        pass
+    def e_connect_to_dut(self):
+        addr = self.dut.get_address()
+        self.helper.init_connection(addr)
 
     def e_connect_to_device(self):
-        pass
+        self.logger.warning('Not implemented yet...')
 
     def e_connect_to_helper(self):
-        pass
+        global helper_connection
+        addr = self.dut.get_address()
+        _, helper_connection = self.helper.init_connection(addr)
 
     def e_disconnect_from_dut(self):
-        pass
+        global helper_connection
+        self.helper.disconnect(helper_connection)
+        helper_connection = -1
 
     def e_disconnect_from_helper(self):
-        pass
+        self.logger.warning('Not implemented yet...')
 
     def e_init_ble_cli(self):
-        pass
+        self.dut.say_hello()
 
     def e_reset(self):
-        pass
+        self.dut.factory_reset()
 
     def e_start_advertising(self):
-        pass
+        self.dut.start_advertising()
+        self.helper.start_scanning()
 
     def e_start_scan(self):
-        pass
+        self.helper.start_advertising()
+        self.dut.start_scanning()
 
     def e_stop_scan(self):
-        pass
+        self.dut.stop_scanning()
+        self.helper.stop_advertising()

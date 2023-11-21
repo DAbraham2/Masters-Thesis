@@ -9,16 +9,25 @@ from gst_utils.logging import get_logger
 logger = get_logger(__name__)
 
 
+def _is_state(line: str) -> bool:
+    valid_states = ['offline', 'disabled', 'detached', 'child', 'router', 'leader']
+    cleaned = line.strip()
+    for s in valid_states:
+        if s in cleaned:
+            return True
+
+    return False
+
+
 class OtUpCli:
     def __init__(self):
         self.logger = get_logger(__name__)
         self.__handlers = {
             'Channel:': self._handle_channel,
             'PAN ID:': self._handle_pan_id,
-            'Ext PAN ID:': None,
-            'Network Key:': None,
-            'Network Name:': None,
-            'IP address:': None,
+            'Network Key:': self._handle_nwk_key,
+            'Network Name:': self._handle_nwk_name,
+            'IP address:': self._handle_ip_addr,
         }
         self._dataset_event: Event = Event()
         self._dataset: Optional[ThreadNetworkData] = None
@@ -43,15 +52,24 @@ class OtUpCli:
 
     @staticmethod
     def set_channel(transport: BaseTransport, *, channel: int) -> None:
-        logger.debug('set_channel with channelId: %s', channel)
+        transport.send(f'dataset_channel {channel}')
 
     @staticmethod
     def set_network_key(transport: BaseTransport, *, network_key: bytes) -> None:
-        logger.debug('set_network_key with network_key: 0x%s', network_key.hex())
+        transport.send(f'dataset_networkkey {{{network_key.hex()}}}')
 
     @staticmethod
     def set_pan_id(transport: BaseTransport, *, pan_id: bytes) -> None:
-        logger.debug('set_pan_id with pan_id: 0x%s', pan_id.hex())
+        transport.send(f'dataset_pan_id 0x{pan_id.hex()}')
+
+    @staticmethod
+    def ping(transport: BaseTransport, remote_address: str) -> None:
+        transport.send_and_expect(f'ping_ipaddr {remote_address}', 'Status: 0x0')
+
+    @staticmethod
+    def start_network(transport: BaseTransport) -> None:
+        transport.send_and_expect('ifconfig_up', 'Status: 0x0')
+        transport.send_and_expect('thread_start', 'Status: 0x0')
 
     def get_ip_address(self, transport: BaseTransport) -> str:
         self.logger.debug('get_ip_address')
@@ -68,6 +86,17 @@ class OtUpCli:
         transport.send('dataset')
 
         return self._dataset
+
+    def get_state(self, transport: BaseTransport) -> str:
+        transport.send('thread_state')
+        time.sleep(0.3)
+        lines = transport.receive()
+        self.logger.debug('get_state receive_queue: %s', lines)
+        for line in lines:
+            if _is_state(line.strip()):
+                return line.strip()
+
+        raise ValueError('state did not got here...')
 
     def _handle_channel(self, actual: str, expected: str) -> None:
         self.logger.debug(
@@ -111,10 +140,12 @@ class OtUpCli:
         self._ip_address_event.set()
 
     def _handle_nwk_key(self, actual: str, expected: str) -> None:
-        ...
+        line = actual.removeprefix(expected).strip()
+        self._dataset.network_key = bytes.fromhex(line)
 
     def _handle_nwk_name(self, actual: str, expected: str) -> None:
-        ...
+        line = actual.removeprefix(expected).strip()
+        self._dataset.network_name = line
 
 
 def _bytes_from_ble_address(original: str) -> bytes:
@@ -218,6 +249,9 @@ class ZigbeeBleDmpCli:
             if self._address != bytes(6):
                 return self._address
             time.sleep(0.4)
+
+    def get_scan_results(self):
+        return self._scan_result
 
     @staticmethod
     def hello(transport: BaseTransport):

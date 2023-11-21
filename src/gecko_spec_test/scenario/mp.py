@@ -1,3 +1,4 @@
+import os
 from typing import Optional
 
 import bgapi
@@ -18,7 +19,8 @@ class MpScenario:
 
     def config(self):
         ble_conn = bgapi.SocketConnector('10.150.64.19', port=4901)
-        self.ble_helper = BleNcp(ble_conn, '')
+        ble_api = os.path.join(os.path.dirname(__file__), 'sl_bt.xapi')
+        self.ble_helper = BleNcp(ble_conn, ble_api)
 
         dut_conn = transport.transport_factory(
             'efr', '10.150.64.17', application_name='dut_sqa_dmp_cmp'
