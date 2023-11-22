@@ -28,12 +28,12 @@ class MpScenario:
         self.dut = DmpApplication(dut_conn)
 
         ot_conn = transport.transport_factory(
-            'erf', '10.150.64.18', application_name='ot_ftd'
+            'efr', '10.150.64.18', application_name='ot_ftd'
         )
         self.ot_helper = OtFtdSoc(ot_conn)
 
         zig_conn = transport.transport_factory(
-            'erf', '10.150.64.14', application_name='z3_light'
+            'efr', '10.150.64.14', application_name='z3_light'
         )
         self.zig_helper = ZigbeeSoc(zig_conn)
 

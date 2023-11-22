@@ -1,6 +1,6 @@
 from typing import Protocol, Callable, Optional
 
-from gst_utils.logging import get_logger
+from gst_utils.gs_logging import get_logger
 
 
 class BaseTransport(Protocol):

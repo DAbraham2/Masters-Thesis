@@ -25,12 +25,14 @@ class DmpApplication(
 
         self._init_handlers()
 
+        self._transport.start_connection()
+
     def _init_handlers(self):
-        for k, v in self._thread.get_handlers():
+        for k, v in self._thread.get_handlers().items():
             self._transport.register_handler(v, k)
-        for k, v in self._ble.get_handlers():
+        for k, v in self._ble.get_handlers().items():
             self._transport.register_handler(v, k)
-        for k, v in self._zigbee.get_handlers():
+        for k, v in self._zigbee.get_handlers().items():
             self._transport.register_handler(v, k)
 
     def start_scanning(self) -> bool:
@@ -106,6 +108,11 @@ class DmpApplication(
     def join_thread_network(self, channel: int, pan_id: bytes):
         self._thread.set_channel(self._transport, channel=channel)
         self._thread.set_pan_id(self._transport, pan_id=pan_id)
+        self._thread.dataset_commit(self._transport)
+        self._thread.start_network(self._transport)
+
+    def join_network_with_nwk_key(self, network_key: bytes):
+        self._thread.set_network_key(self._transport, network_key=network_key)
         self._thread.dataset_commit(self._transport)
         self._thread.start_network(self._transport)
 

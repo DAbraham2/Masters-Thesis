@@ -1,4 +1,4 @@
-from gst_utils.logging import get_logger
+from gst_utils.gs_logging import get_logger
 from interface.ot import ThreadNetworkData
 from transport import BaseTransport
 

@@ -2,9 +2,11 @@ import time
 from threading import Event
 from typing import Callable, Optional
 
+from tenacity import retry, stop_after_attempt, wait_random_exponential
+
 from transport import BaseTransport
 from interface.ot import ThreadNetworkData
-from gst_utils.logging import get_logger
+from gst_utils.gs_logging import get_logger
 
 logger = get_logger(__name__)
 
@@ -22,7 +24,7 @@ def _is_state(line: str) -> bool:
 class OtUpCli:
     def __init__(self):
         self.logger = get_logger(__name__)
-        self.__handlers = {
+        self.__handlers: dict[str, Callable[[str, str], None]] = {
             'Channel:': self._handle_channel,
             'PAN ID:': self._handle_pan_id,
             'Network Key:': self._handle_nwk_key,
@@ -87,9 +89,14 @@ class OtUpCli:
 
         return self._dataset
 
+    @retry(
+        reraise=True,
+        stop=stop_after_attempt(3),
+        wait=wait_random_exponential(max=10, multiplier=0.1),
+    )
     def get_state(self, transport: BaseTransport) -> str:
         transport.send('thread_state')
-        time.sleep(0.3)
+        time.sleep(0.01)
         lines = transport.receive()
         self.logger.debug('get_state receive_queue: %s', lines)
         for line in lines:
@@ -140,10 +147,16 @@ class OtUpCli:
         self._ip_address_event.set()
 
     def _handle_nwk_key(self, actual: str, expected: str) -> None:
+        self.logger.debug(
+            '_handle_nwk_key Actual: [%s] -- Expected: [%s]', actual, expected
+        )
         line = actual.removeprefix(expected).strip()
         self._dataset.network_key = bytes.fromhex(line)
 
     def _handle_nwk_name(self, actual: str, expected: str) -> None:
+        self.logger.debug(
+            '_handle_nwk_name Actual: [%s] -- Expected: [%s]', actual, expected
+        )
         line = actual.removeprefix(expected).strip()
         self._dataset.network_name = line
 
@@ -154,6 +167,7 @@ def _bytes_from_ble_address(original: str) -> bytes:
     :param original: given address `example: [34 25 B4 A9 4A 66]`
     :return:
     """
+    logger.debug('Actual: <%s>', original)
     cleaned = ''
     if original.removeprefix('['):
         cleaned = original.removeprefix('[').removesuffix(']').strip()
@@ -193,6 +207,9 @@ class ZigbeeBleDmpCli:
         :param expected:
         :return:
         """
+        self.logger.debug(
+            '_handle_address Actual: [%s] -- Expected: [%s]', actual, expected
+        )
         data = actual.removeprefix(expected).strip()
         match self._in_scan:
             case True:
@@ -201,6 +218,9 @@ class ZigbeeBleDmpCli:
                 self._address = _bytes_from_ble_address(data)
 
     def _handle_conn_opened(self, actual, expected) -> None:
+        self.logger.debug(
+            '_handle_conn_opened Actual: [%s] -- Expected: [%s]', actual, expected
+        )
         self._peripheral = True
 
     def enter_connectable(

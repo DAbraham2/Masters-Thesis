@@ -2,7 +2,10 @@
 
 FROM amazoncorretto:17
 
-RUN wget https://github.com/GraphWalker/graphwalker-project/releases/download/4.3.2/graphwalker-studio-4.3.2.jar
+WORKDIR /app
+
+COPY graphwalker-studio-4.3.2.jar ./
+
 EXPOSE 9090
 
 CMD ["java", "-jar", "graphwalker-studio-4.3.2.jar"]

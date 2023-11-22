@@ -1,7 +1,7 @@
 from queue import Queue
 from typing import Callable
 
-from gst_utils.logging import get_logger
+from gst_utils.gs_logging import get_logger
 from transport import BaseTransport
 
 

@@ -4,7 +4,7 @@ from queue import Queue
 from telnetlib import Telnet
 from typing import Callable, Optional
 
-from gst_utils.logging import Logger, get_logger
+from gst_utils.gs_logging import Logger, get_logger
 from .base_transport import BaseTransport
 
 _LINE_TERM = '\r\n'
@@ -48,20 +48,23 @@ class TelnetTransport(BaseTransport):
         """
         Deconstruct
         """
-        self._run = False
-        self._reader_thread.join(10)
+        if self._reader_thread.is_alive():
+            self._run = False
+            self._reader_thread.join(10)
         self._connection.close()
         self._connection = None
 
-    def send(self, msg: str) -> None:
-        self.logger.debug('TX: %s', msg)
-        self._connection.write(bytes(msg + _LINE_TERM, 'ascii'))
+    def send(self, message: str) -> None:
+        self.logger.debug('TX: [%s]', message)
+        msg = message + _LINE_TERM
+        msg = msg.encode('ascii')
+        self._connection.write(msg)
 
     def send_and_expect(self, msg: str, expect: str, *, timeout: float = 1) -> str:
         self.send(msg)
         data = self._connection.read_until(expect.encode(), timeout)
 
-        return data.decode()
+        return data.decode('ascii')
 
     def register_handler(self, handler: Callable[[], None], expect: str) -> int:
         if expect not in self._handlers.keys():
@@ -78,11 +81,12 @@ class TelnetTransport(BaseTransport):
         arr = []
         siz = self._queue.qsize()
         for _ in range(siz):
-            arr.append(self._queue.get_nowait())
+            arr.append(self._queue.get(True, None))
 
         return arr
 
     def start_connection(self) -> bool:
+        self.logger.info('Connection starting...')
         self._connection.open(self.ip, self.port)
         self.send_and_expect('\n', '>', timeout=5)
         self._run = True
@@ -91,6 +95,7 @@ class TelnetTransport(BaseTransport):
         return True
 
     def stop_connection(self) -> bool:
+        self.logger.info('Stopping connection...')
         self._run = False
         self._reader_thread.join(10)
         self._connection.close()
@@ -107,18 +112,18 @@ class TelnetTransport(BaseTransport):
                 continue
             data += left_out
             left_out = b''
-            lines = data.split(term)
-            for l in lines[:-1]:
-                line = l.decode().strip()
-                if line != '':
-                    self.logger.debug('RX: %s', line)
-                    self._queue.put_nowait(line)
-                    self._handler_task(line)
-            self.logger.debug('Full RX: %s', _decode_for_log(data))
+            lines = data.decode('ascii').strip().splitlines()
+            for line in lines[::-1]:
+                clean = line.strip()
+                if clean != '':
+                    self.logger.debug('RX: [%s]', clean)
+                    self._queue.put_nowait(clean)
+                    self._handler_task(clean)
+            self.logger.debug('Full RX: [%s]', _decode_for_log(data))
 
     def _handler_task(self, line: str) -> None:
         for k in self._handlers.keys():
             if k in line:
                 for h in self._handlers[k]:
-                    self.logger.debug('Found handler for %s', k)
+                    self.logger.debug('Found handler for [%s]', k)
                     h(line, k)

@@ -35,6 +35,9 @@ class ThreadDevice(Protocol):
     def join_thread_network(self, channel: int, pan_id: bytes):
         ...
 
+    def join_network_with_nwk_key(self, network_key: bytes):
+        ...
+
 
 class ThreadCoordinator(Protocol):
     def create_network(

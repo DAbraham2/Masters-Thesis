@@ -22,6 +22,9 @@ class ZigbeeCoordinator(Protocol):
     def create_network(self, channel: int, pan_id: bytes):
         ...
 
+    def reset(self):
+        ...
+
 
 class ZigbeeThroughputable(Protocol):
     def start_throughput(self) -> bool:

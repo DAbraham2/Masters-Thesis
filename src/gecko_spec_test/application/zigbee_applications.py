@@ -1,4 +1,4 @@
-from gst_utils.logging import get_logger
+from gst_utils.gs_logging import get_logger
 from interface.zigbee import ZigbeeUtils, ZigbeeCoordinator, ZigbeeThroughputable
 from plugins.cli.zigbeee import ZigbeeCore, ZigbeeStatus, create_network
 from transport import BaseTransport
@@ -11,9 +11,10 @@ class ZigbeeSoc(ZigbeeUtils, ZigbeeCoordinator, ZigbeeThroughputable):
         self._cli: ZigbeeCore = ZigbeeCore()
         self._state = None
         self._init_handlers()
+        self._transport.start_connection()
 
     def _init_handlers(self):
-        for k, v in self._cli.get_handlers():
+        for k, v in self._cli.get_handlers().items():
             self._transport.register_handler(v, k)
 
     def get_node_id(self) -> bytes:
