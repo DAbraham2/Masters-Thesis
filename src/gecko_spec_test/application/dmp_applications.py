@@ -19,7 +19,7 @@ class DmpApplication(
     def __init__(self, transport: BaseTransport):
         self._transport = transport
         self._thread = OtUpCli()
-        self._ble = ZigbeeBleDmpCli()
+        self._ble = ZigbeeBleDmpCli(on_external_join=self.__ble_peri_join)
         self._ble_state = BleState.STANDBY
         self._zigbee = ZigbeeCore()
 
@@ -38,7 +38,7 @@ class DmpApplication(
     def start_scanning(self) -> bool:
         try:
             self._ble.start_scan(self._transport, discovery_mode=0x2)
-            self._ble_state = BleState.STANDBY
+            self._ble_state = BleState.SCANNING
             return True
         except Exception:
             return False
@@ -82,6 +82,7 @@ class DmpApplication(
         return self._zigbee.get_state().node_id
 
     def get_zig_state(self) -> ZigbeeStatus:
+        self._zigbee.info(self._transport)
         return self._zigbee.get_state()
 
     def join_network(self, channel: int):
@@ -103,6 +104,7 @@ class DmpApplication(
         return self._thread.get_ip_address(self._transport)
 
     def factory_reset(self) -> None:
+        setattr(self._ble, '_in_scan', False)
         self._thread.factory_reset(self._transport)
 
     def join_thread_network(self, channel: int, pan_id: bytes):
@@ -121,3 +123,12 @@ class DmpApplication(
 
     def scan_results(self) -> set[bytes]:
         return self._ble.get_scan_results()
+
+    def say_hello(self) -> None:
+        self._ble.hello(self._transport)
+
+    def ping(self, remote_address: str) -> None:
+        self._thread.ping(self._transport, remote_address)
+
+    def __ble_peri_join(self) -> None:
+        self._ble_state = BleState.CONNECTION

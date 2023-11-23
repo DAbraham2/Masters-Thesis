@@ -1,3 +1,5 @@
+import time
+
 from gst_utils.gs_logging import get_logger
 from interface.ot import ThreadNetworkData
 from transport import BaseTransport
@@ -22,19 +24,19 @@ def ip_address(transport: BaseTransport) -> str:
 
 
 def create_new_network(transport: BaseTransport):
-    transport.send_and_expect('dataset clear', 'Done')
-    transport.send_and_expect('dataset init new', 'Done')
-    transport.send_and_expect('dataset commit active', 'Done')
-    transport.send_and_expect('ifconfig up', 'Done')
+    _ = transport.send_and_expect('dataset clear', 'Done')
+    _ = transport.send_and_expect('dataset init new', 'Done')
+    _ = transport.send_and_expect('dataset commit active', 'Done')
+    _ = transport.send_and_expect('ifconfig up', 'Done')
     transport.send('thread start')
 
 
 def create_network(transport: BaseTransport, channel: int, pan_id: bytes):
-    transport.send_and_expect('dataset clear', 'Done')
-    transport.send_and_expect(f'dataset channel {channel}', 'Done')
-    transport.send_and_expect(f'dataset panid 0x{pan_id.hex()}', 'Done')
-    transport.send_and_expect('dataset commit active', 'Done')
-    transport.send_and_expect('ifconfig up', 'Done')
+    _ = transport.send_and_expect('dataset clear', 'Done')
+    _ = transport.send_and_expect(f'dataset channel {channel}', 'Done')
+    _ = transport.send_and_expect(f'dataset panid 0x{pan_id.hex()}', 'Done')
+    _ = transport.send_and_expect('dataset commit active', 'Done')
+    _ = transport.send_and_expect('ifconfig up', 'Done')
     transport.send('thread start')
 
 
@@ -54,8 +56,9 @@ class OtFtdCli:
         self._dataset.channel = int(line)
 
     def __handle_pan(self, actual: str, expected: str) -> None:
-        line = actual.removeprefix(expected).strip()
-        self._dataset.pan_id = bytes.fromhex(line[2:])
+        if 'Ext PAN ID' not in actual:
+            line = actual.removeprefix(expected).strip()
+            self._dataset.pan_id = bytes.fromhex(line[2:])
 
     def __handle_nwk_key(self, actual: str, expected: str) -> None:
         line = actual.removeprefix(expected).strip()
@@ -85,5 +88,6 @@ class OtFtdCli:
         self._dataset = ThreadNetworkData()
 
     def factory_reset(self, transport: BaseTransport) -> None:
-        transport.send('factory reset')
+        transport.send('reset')
         self._dataset = ThreadNetworkData()
+        time.sleep(2)

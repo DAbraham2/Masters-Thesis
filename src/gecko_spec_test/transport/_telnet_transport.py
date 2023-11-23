@@ -11,7 +11,10 @@ _LINE_TERM = '\r\n'
 
 
 def _decode_for_log(msg: bytes) -> str:
-    return msg.decode()
+    try:
+        return msg.decode()
+    except UnicodeDecodeError:
+        return f'{msg}'
 
 
 class TelnetTransport(BaseTransport):
@@ -112,12 +115,16 @@ class TelnetTransport(BaseTransport):
                 continue
             data += left_out
             left_out = b''
-            lines = data.decode('ascii').strip().splitlines()
+            try:
+                lines = data.decode().strip().splitlines()
+            except UnicodeDecodeError:
+                self.logger.critical(f'unable to decode message: <<{data}>>')
+                lines = []
             for line in lines[::-1]:
                 clean = line.strip()
                 if clean != '':
                     self.logger.debug('RX: [%s]', clean)
-                    self._queue.put_nowait(clean)
+                    self.__add_to_queue(clean)
                     self._handler_task(clean)
             self.logger.debug('Full RX: [%s]', _decode_for_log(data))
 
@@ -127,3 +134,10 @@ class TelnetTransport(BaseTransport):
                 for h in self._handlers[k]:
                     self.logger.debug('Found handler for [%s]', k)
                     h(line, k)
+
+    def __add_to_queue(self, line: str) -> None:
+        if self._queue.qsize() > 98:
+            for _ in range(50):
+                self._queue.get_nowait()
+
+        self._queue.put_nowait(line)

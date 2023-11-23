@@ -1,5 +1,8 @@
+import time
+
 import bgapi.connector
 from bgapi import BGLib
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 from gst_utils.gs_logging import get_logger
 from interface.ble import InitiatorBleDevice, MinimalBleDevice, BleUtils, BleState
@@ -32,6 +35,7 @@ class BleNcp(InitiatorBleDevice, MinimalBleDevice, BleUtils):
         self.logger = get_logger('ble_ncp-cli')
         self._bgapi = BGLib(connector, api)
         self._state = BleState.STANDBY
+        self._adv_handler = -1
         self._bgapi.open()
 
     def init_connection(self, address: bytes) -> tuple[bool, int]:
@@ -54,6 +58,7 @@ class BleNcp(InitiatorBleDevice, MinimalBleDevice, BleUtils):
         self._state = BleState.STANDBY
         return True
 
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(0.25, min=1, max=10))
     def start_scanning(self) -> bool:
         self._bgapi.bt.scanner.start(0x1, 0x2)
         self._state = BleState.SCANNING
@@ -65,18 +70,26 @@ class BleNcp(InitiatorBleDevice, MinimalBleDevice, BleUtils):
         return True
 
     def start_advertising(self) -> bool:
+        _, self._adv_handler = self._bgapi.bt.advertisier.create_set()
+        self.logger.debug('Advertiser set is: %s', self._adv_handler)
+        _ = self._bgapi.bt.legacy_advertiser.start(self._adv_handler, 0x2)
         self._state = BleState.ADVERTISING
-        return super().start_advertising()
+
+        return True
 
     def stop_advertising(self) -> bool:
+        _ = self._bgapi.bt.advertisier.stop(self._adv_handler)
+        _ = self._bgapi.bt.advertisier.delete_set(self._adv_handler)
+        self._adv_handler = -1
         self._state = BleState.STANDBY
-        return super().stop_advertising()
+        return True
 
     def get_state(self) -> BleState:
         return self._state
 
     def get_address(self) -> bytes:
-        addr = self._bgapi.bt.system.get_identity_address()
+        _, addr, _ = self._bgapi.bt.system.get_identity_address()
+        self.logger.debug(f'get_address-> {addr}')
         return _bytes_from_address(addr)
 
     def expect_scan(self, remote_address: bytes, *, timeout: float = 15) -> bool:
@@ -107,3 +120,7 @@ class BleNcp(InitiatorBleDevice, MinimalBleDevice, BleUtils):
                 return True
 
         return False
+
+    def reset(self):
+        self._bgapi.bt.system.reset(0)
+        time.sleep(2)

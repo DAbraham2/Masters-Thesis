@@ -1,7 +1,10 @@
+import time
+
 from gst_utils.gs_logging import get_logger
 from interface.zigbee import ZigbeeUtils, ZigbeeCoordinator, ZigbeeThroughputable
 from plugins.cli.zigbeee import ZigbeeCore, ZigbeeStatus, create_network
 from transport import BaseTransport
+import plugins.cli.zigbeee as zig_cli
 
 
 class ZigbeeSoc(ZigbeeUtils, ZigbeeCoordinator, ZigbeeThroughputable):
@@ -21,6 +24,8 @@ class ZigbeeSoc(ZigbeeUtils, ZigbeeCoordinator, ZigbeeThroughputable):
         return self._cli.get_state().node_id
 
     def get_zig_state(self) -> ZigbeeStatus:
+        self._cli.info(self._transport)
+        time.sleep(0.3)
         return self._cli.get_state()
 
     def create_network(self, channel: int, pan_id: bytes):
@@ -32,5 +37,5 @@ class ZigbeeSoc(ZigbeeUtils, ZigbeeCoordinator, ZigbeeThroughputable):
     def wait_for_results(self) -> float:
         raise NotImplementedError()
 
-    def clean_up(self):
-        ...
+    def reset(self):
+        zig_cli.leave_network(self._transport)

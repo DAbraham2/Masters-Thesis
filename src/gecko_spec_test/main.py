@@ -12,7 +12,9 @@ logger = get_logger('gst_main')
 
 
 def __main() -> None:
-    models: list[tuple] = [('./models/mp-model.json', 'random(edge_coverage(100))')]
+    models: list[tuple] = [
+        ('./models/mp-model.json', 'quick_random(edge_coverage(100))')
+    ]
     res = graphwalker.check(models)
     logger.info(res)
 

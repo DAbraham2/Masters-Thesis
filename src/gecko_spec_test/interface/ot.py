@@ -30,6 +30,9 @@ class ThreadUtils(Protocol):
     def get_thread_state(self) -> str:
         ...
 
+    def ping(self, remote_address: str) -> None:
+        ...
+
 
 class ThreadDevice(Protocol):
     def join_thread_network(self, channel: int, pan_id: bytes):

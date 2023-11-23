@@ -10,12 +10,16 @@ from combined_test_suite.tests.utilities import (
 from gst_utils.gs_logging import get_logger
 from interface.ble import BleState
 from scenario.mp import get_mp_scenario
+from assertpy import assert_that
 
 
 def setUpRun():
     logger = get_logger(__name__)
     logger.info('started setup')
     get_mp_scenario().config()
+    logger.info(
+        '\n\n\n************************** FINISHED SETUP **************************\n\n\n'
+    )
 
 
 def tearDownRun():
@@ -30,7 +34,7 @@ helper_connection: int = -1
 
 class OtBle:
     def __init__(self):
-        self.logger = get_logger(__name__)
+        self.logger = get_logger('OtBle')
         self.dut = get_mp_scenario().dut
         self.ot = get_mp_scenario().ot_helper
         self.ble = get_mp_scenario().ble_helper
@@ -161,8 +165,6 @@ class OtBle:
 
     def v_reset(self):
         self.logger.info('going to jail')
-        self.ot.factory_reset()
-        self.dut.factory_reset()
 
     def v_leader_scan(self):
         assert is_state('leader', self.dut)
@@ -180,7 +182,7 @@ class OtBle:
 
 class ZigBle:
     def __init__(self):
-        self.logger = get_logger(__name__)
+        self.logger = get_logger('ZigBle')
         self.dut = get_mp_scenario().dut
         self.zig = get_mp_scenario().zig_helper
         self.ble = get_mp_scenario().ble_helper
@@ -310,7 +312,7 @@ class ZigBle:
 
 class SingleZigbee:
     def __init__(self):
-        self.logger = get_logger(__name__)
+        self.logger = get_logger('SingleZigbee')
         self.dut = get_mp_scenario().dut
         self.zig = get_mp_scenario().zig_helper
         self.ot = get_mp_scenario().ot_helper
@@ -327,7 +329,7 @@ class SingleZigbee:
     def v_no_network(self):
         i1 = self.zig.get_zig_state()
         i2 = self.dut.get_zig_state()
-
+        self.logger.debug('Helper state: %s\nDUT state: %s', i1, i2)
         assert i1.network_state == 0x0
         assert i2.network_state == 0x0
 
@@ -388,117 +390,169 @@ class SingleZigbee:
         self.logger.warning('Not implemented yet...')
 
 
-# TODO
 class SingleThread:
     def __init__(self):
-        self.logger = get_logger(__name__)
+        self.logger = get_logger('SingleThread')
+        self.dut = get_mp_scenario().dut
+        self.zig = get_mp_scenario().zig_helper
+        self.ot = get_mp_scenario().ot_helper
+        self.ble_status = False
 
     def v_thread_child(self):
-        pass
-
-    def v_thread_detached(self):
-        pass
+        assert_that(is_child(self.dut)).is_true()
 
     def v_thread_disabled(self):
-        pass
+        self.ble_status = False
+        assert_that(is_state('disabled', self.dut)).is_true()
 
     def v_thread_leader(self):
-        pass
+        assert_that(is_state('leader', self.dut)).is_true()
 
     def v_with_ble_c(self):
-        pass
-
-    def v_with_ble_d(self):
-        pass
+        assert_that(self.ble_status).is_true()
+        assert_that(is_child(self.dut)).is_true()
 
     def v_with_zig_c(self):
-        pass
+        for i in range(4):
+            try:
+                i1 = self.zig.get_zig_state()
+                assert_that(i1.network_state).is_not_in([0x0, 0x6])
+            except AssertionError:
+                if i == 3:
+                    raise
+                continue
 
-    def v_with_zig_d(self):
-        pass
-
-    def e_add_ble(self):
-        pass
-
-    def e_add_zig(self):
-        pass
-
-    def e_factory_reset(self):
-        pass
-
-    def e_leader_stop(self):
-        pass
-
-    def e_thread_join(self):
-        pass
-
-    def e_thread_restart(self):
-        pass
-
-    def e_thread_stop(self):
-        pass
-
-    def e_ot_ping_dut(self):
-        ...
-
-    def e_ot_ping_helper(self):
-        ...
+        assert_that(is_child(self.dut)).is_true()
 
     def v_with_zig_ldr(self):
-        ...
+        for i in range(4):
+            try:
+                i1 = self.zig.get_zig_state()
+                assert_that(i1.network_state).is_not_in([0x0, 0x6])
+            except AssertionError:
+                if i == 3:
+                    raise
+                continue
+
+        assert_that(is_state('leader', self.dut)).is_true()
 
     def v_with_ble_ldr(self):
-        ...
+        assert_that(self.ble_status).is_true()
+        assert_that(is_state('leader', self.dut)).is_true()
 
+    def v_reset(self):
+        self.logger.info('resetting whole model')
 
-# TODO
-class SingleProt:
-    def __init__(self):
-        self.logger = get_logger(__name__)
-        self.dut = get_mp_scenario().dut
-        self.ble_hello = False
-        self.zig_state = None
-        self.ot_state = ''
+    def e_add_ble(self):
+        self.logger.info('Adding ble to the equation')
+        self.dut.say_hello()
+        self.ble_status = True
 
-    def v_init(self):
-        time.sleep(2)
-        self.logger.info('Test started')
-
-    def v_single_ble(self):
-        assert self.ble_hello is True
-
-    def v_single_thread(self):
-        assert self.ot_state != ''
-
-    def v_single_zig(self):
-        assert self.zig_state.node_type is not None
+    def e_add_zig(self):
+        d1 = self.ot.get_dataset()
+        self.zig.create_network(d1.channel, d1.pan_id)
 
     def e_factory_reset(self):
         self.dut.factory_reset()
+
+    def e_leader_stop(self):
+        self.ot.factory_reset()
+
+    def e_thread_join(self):
+        d1 = self.ot.get_dataset()
+        self.dut.join_network_with_nwk_key(d1.network_key)
+
+    def e_ot_ping_dut(self):
+        addr = self.dut.get_ip_address()
+        self.ot.ping(addr)
+
+    def e_ot_ping_helper(self):
+        addr = self.ot.get_ip_address()
+        self.dut.ping(addr)
+
+
+class SingleProt:
+    def __init__(self):
+        self.logger = get_logger('SingleProt')
+        self.dut = get_mp_scenario().dut
+        self.ot = get_mp_scenario().ot_helper
         self.ble_hello = False
+        self.ble = get_mp_scenario().ble_helper
+        self.zig_state = None
+        self.zig = get_mp_scenario().zig_helper
+        self.ot_state = ''
+
+    def v_init(self):
+        global helper_connection, dut_connection
+        time.sleep(2)
+        self.logger.info('Test started')
+
+    def v_clean_init(self):
+        ...
+
+    def v_global_reset(self):
+        self.logger.info('v_global_reset...')
+
+    def v_single_ble(self):
+        self.logger.info('v_single_ble...')
+
+    def v_single_thread(self):
+        assert_that(self.ot_state).is_not_same_as('')
+
+    def v_single_zig(self):
+        assert_that(self.zig_state).is_not_none()
+
+    def e_init(self):
+        self.ble.reset()
+        self.dut.factory_reset()
+        self.zig.reset()
+        self.ot.factory_reset()
+
+    def e_start_again(self):
+        global helper_connection, dut_connection
+        self.ot.factory_reset()
+        self.zig.reset()
+        if helper_connection != -1:
+            self.ble.disconnect(helper_connection)
+            helper_connection = -1
+        dut_connection = -1
+        self.dut.factory_reset()
+
+    def e_factory_reset(self):
+        self.ot.factory_reset()
+        self.dut.factory_reset()
+        self.ble_hello = False
+        time.sleep(1)
 
     def e_reset(self):
         self.dut.factory_reset()
         self.ble_hello = False
 
+    def e_reset_ble(self):
+        self.logger.info('e_reset_ble...')
+
     def e_start_ble(self):
-        self.dut.say_hello()
-        self.ble_hello = True
+        self.logger.info('e_start_ble...')
 
     def e_start_th(self):
+        self.ot.factory_reset()
+        self.ot.create_network()
         self.ot_state = self.dut.get_thread_state()
 
     def e_start_zig(self):
+        self.zig.reset()
+        self.dut.leave_network()
         self.zig_state = self.dut.get_zig_state()
 
 
 class SingleBle:
     def __init__(self):
-        self.logger = get_logger(__name__)
+        self.logger = get_logger('SingleBle')
         self.dut = get_mp_scenario().dut
         self.helper = get_mp_scenario().ble_helper
 
     def v_conn_initiate(self):
+        self.logger.debug('v_conn_initiate')
         self.logger.warning('Not implemented yet...')
 
     def v_advertising(self):
@@ -508,6 +562,7 @@ class SingleBle:
         assert result is True
 
     def v_connection_as_central(self):
+        self.logger.debug('v_connection_as_central')
         self.logger.warning('Not implemented yet...')
 
     def v_connection_as_peripheral(self):
@@ -515,11 +570,13 @@ class SingleBle:
         assert helper_connection >= 0
 
     def v_controller_init(self):
+        self.logger.debug('v_controller_init')
         self.logger.debug('Whatever happens here...')
 
     def v_scanning(self):
         assert BleState.SCANNING == self.dut.get_state()
         addr = self.helper.get_address()
+        self.logger.debug('address: [%s]', addr.hex())
         found_helper = address_in_scan(addr, self.dut.scan_results())
         assert found_helper is True
 
@@ -530,16 +587,18 @@ class SingleBle:
         self.dut.stop_advertising()
 
     def e_connect_to_dut(self):
-        addr = self.dut.get_address()
-        self.helper.init_connection(addr)
-
-    def e_connect_to_device(self):
-        self.logger.warning('Not implemented yet...')
-
-    def e_connect_to_helper(self):
         global helper_connection
         addr = self.dut.get_address()
         _, helper_connection = self.helper.init_connection(addr)
+
+    def e_connect_to_device(self):
+        self.logger.debug('e_connect_to_device')
+        self.logger.warning('Not implemented yet...')
+
+    def e_connect_to_helper(self):
+        global dut_connection
+        self.logger.debug('e_connect_to_helper')
+        dut_connection = 12
 
     def e_disconnect_from_dut(self):
         global helper_connection
@@ -547,13 +606,18 @@ class SingleBle:
         helper_connection = -1
 
     def e_disconnect_from_helper(self):
+        self.logger.debug('e_disconnect_from_helper')
         self.logger.warning('Not implemented yet...')
+        global dut_connection
+        dut_connection = -1
 
     def e_init_ble_cli(self):
         self.dut.say_hello()
+        self.helper.say_hello()
 
     def e_reset(self):
         self.dut.factory_reset()
+        self.helper.reset()
 
     def e_start_advertising(self):
         self.dut.start_advertising()
@@ -568,54 +632,100 @@ class SingleBle:
         self.helper.stop_advertising()
 
 
-# TODO
 class ZigOtCmp:
     def __init__(self):
+        self.logger = get_logger('ZigOtCmp')
         self.dut = get_mp_scenario().dut
         self.ot = get_mp_scenario().ot_helper
         self.zig = get_mp_scenario().zig_helper
 
     def v_reset(self):
-        ...
+        self.logger.info('Home running...')
 
     def v_joined_child(self):
-        ...
+        i1 = self.zig.get_zig_state()
+        i2 = self.dut.get_zig_state()
+
+        assert_that(i2.channel, 'Zigbee must be on the same channel').is_equal_to(
+            i1.channel
+        )
+
+        d1 = self.ot.get_dataset()
+        d2 = self.dut.get_dataset()
+
+        assert_that(d2.channel, 'Thread must be on the same channel').is_equal_to(
+            d1.channel
+        )
+        assert_that(
+            i1.channel, 'Thread and Zigbee mush be on the same channel'
+        ).is_equal_to(d1.channel)
+
+        assert_that(is_child(self.dut), 'DUT must be child').is_true()
 
     def v_joined_ldr(self):
-        ...
+        i1 = self.zig.get_zig_state()
+        i2 = self.dut.get_zig_state()
+
+        assert_that(i2.channel, 'Zigbee must be on the same channel').is_equal_to(
+            i1.channel
+        )
+        assert_that(is_state('leader', self.dut), 'DUT must be leader').is_true()
 
     def v_tp_child(self):
-        ...
+        assert_that(is_child(self.dut)).is_true()
+        i2 = self.dut.get_zig_state()
+
+        assert_that(i2.network_state).is_between(0x2, 0x5)
+
+        d1 = self.ot.get_dataset()
+        d2 = self.dut.get_dataset()
+
+        assert_that(d1.channel).is_equal_to(d2.channel)
+        assert_that(d1.pan_id).is_equal_to(d2.pan_id)
+        assert_that(is_child(self.dut)).is_true()
 
     def v_disc_child(self):
-        ...
+        assert_that(is_child(self.dut)).is_true()
+        i2 = self.dut.get_zig_state()
+        assert_that(i2.network_state).is_equal_to(0x0)
+        d1 = self.ot.get_dataset()
+        d2 = self.dut.get_dataset()
+
+        assert_that(d1.channel).is_equal_to(d2.channel)
+        assert_that(d1.pan_id).is_equal_to(d2.pan_id)
+        assert_that(is_child(self.dut)).is_true()
 
     def v_tp_ldr(self):
-        ...
+        assert_that(is_state('leader', self.dut), 'DUT must be leader').is_true()
 
     def v_disc_ldr(self):
-        ...
+        assert_that(is_state('leader', self.dut), 'DUT must be leader').is_true()
 
     def e_factory_reset(self):
-        ...
+        self.dut.factory_reset()
+        self.ot.factory_reset()
+        self.zig.reset()
 
     def e_zig_leave(self):
-        ...
+        self.dut.leave_network()
 
     def e_ot_leader_drop(self):
-        ...
+        self.ot.factory_reset()
 
     def e_zig_tp_analize(self):
-        ...
+        self.logger.warning('Needs implementation...')
 
     def e_zig_join(self):
-        ...
+        i1 = self.zig.get_zig_state()
+        self.dut.join_network(i1.channel)
 
     def e_ot_ping_helper(self):
-        ...
+        addr = self.dut.get_ip_address()
+        self.ot.ping(addr)
 
     def e_ot_ping_dut(self):
-        ...
+        addr = self.ot.get_ip_address()
+        self.dut.ping(addr)
 
     def e_zig_tp_start(self):
-        ...
+        self.logger.warning('Needs implementation...')

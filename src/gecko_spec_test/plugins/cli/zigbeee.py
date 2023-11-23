@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from threading import Event
 from typing import Callable
 
 from transport import BaseTransport
@@ -16,6 +17,7 @@ class ZigbeeStatus:
 class ZigbeeCore:
     def __init__(self):
         self._status: ZigbeeStatus = ZigbeeStatus()
+        self.on_info = Event()
         self.__handlers: dict[str, Callable[[str, str], None]] = {
             'panID [': self._handle_pan_id,
             'nodeType [': self._handle_node_type,
@@ -60,7 +62,10 @@ class ZigbeeCore:
             line = actual.split(expected)[1]
 
         node = line.split(']')[0]
-        self._status.node_type = int(node[2:])
+        try:
+            self._status.node_type = int(node[2:])
+        except ValueError:
+            self._status.node_type = -1
 
     def _handle_nwk_state(self, actual: str, expected: str):
         """
@@ -77,6 +82,7 @@ class ZigbeeCore:
 
         nwk = line.split(']')[0]
         self._status.network_state = int(nwk)
+        self.on_info.set()
 
     def _handle_chan(self, actual: str, expected: str):
         """
@@ -88,11 +94,13 @@ class ZigbeeCore:
         line = actual.split(expected)[1]
         self._status.channel = int(line.split(']')[0])
 
-    @staticmethod
-    def info(transport: BaseTransport):
+    def info(self, transport: BaseTransport):
+        self.on_info.clear()
         transport.send('info')
 
     def get_state(self) -> ZigbeeStatus:
+        if self._status is None and self.on_info.wait(0.5) is False:
+            return ZigbeeStatus()
         return self._status
 
 

@@ -186,7 +186,7 @@ def _ble_address_from_bytes(original: bytes) -> str:
 
 
 class ZigbeeBleDmpCli:
-    def __init__(self):
+    def __init__(self, *, on_external_join: Optional[Callable] = None):
         self.logger = get_logger(__name__)
         self.__handlers = {
             'BLE address:': self._handle_address,
@@ -196,6 +196,7 @@ class ZigbeeBleDmpCli:
         self._in_scan: bool = False
         self._scan_result: set[bytes] = set()
         self._address: bytes = bytes(6)
+        self.__on_external_join = on_external_join
 
     def get_handlers(self) -> dict[str, Callable[[str, str], None]]:
         return self.__handlers
@@ -221,7 +222,8 @@ class ZigbeeBleDmpCli:
         self.logger.debug(
             '_handle_conn_opened Actual: [%s] -- Expected: [%s]', actual, expected
         )
-        self._peripheral = True
+        if self.__on_external_join is not None:
+            self.__on_external_join()
 
     def enter_connectable(
         self,
