@@ -16,6 +16,9 @@ class ZigbeeSoc(ZigbeeUtils, ZigbeeCoordinator, ZigbeeThroughputable):
         self._init_handlers()
         self._transport.start_connection()
 
+    def __del__(self):
+        del self._transport
+
     def _init_handlers(self):
         for k, v in self._cli.get_handlers().items():
             self._transport.register_handler(v, k)

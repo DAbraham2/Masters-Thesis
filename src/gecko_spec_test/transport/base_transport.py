@@ -16,7 +16,9 @@ class BaseTransport(Protocol):
         """
         ...
 
-    def send_and_expect(self, msg: str, expect: str, *, timeout: float = 1) -> str:
+    def send_and_expect(
+        self, msg: str, expect: str, *, timeout: float = 1
+    ) -> list[str] | str:
         """
         Send a message to a device and expect an output
         :param timeout:

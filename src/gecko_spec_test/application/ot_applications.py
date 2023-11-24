@@ -16,6 +16,9 @@ class OtFtdSoc(ThreadUtils, ThreadCoordinator):
         self.__init_handlers()
         self._transport.start_connection()
 
+    def __del__(self):
+        del self._transport
+
     def __init_handlers(self):
         for k, v in self._cli.get_handlers().items():
             self._transport.register_handler(v, k)
@@ -28,6 +31,8 @@ class OtFtdSoc(ThreadUtils, ThreadCoordinator):
         else:
             open_thread.create_network(self._transport, channel, pan_id)
 
+        self._cli.wait_for_network_start(60)
+
     def get_dataset(self) -> ThreadNetworkData:
         return self._cli.dataset(self._transport)
 
@@ -39,3 +44,6 @@ class OtFtdSoc(ThreadUtils, ThreadCoordinator):
 
     def factory_reset(self) -> None:
         self._cli.factory_reset(self._transport)
+
+    def get_thread_state(self) -> str:
+        return self._cli.get_state(self._transport)

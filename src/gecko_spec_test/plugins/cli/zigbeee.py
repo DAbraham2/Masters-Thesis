@@ -112,10 +112,15 @@ def _set_masks(transport: BaseTransport, channel: int) -> None:
 
 
 def leave_network(transport: BaseTransport) -> None:
-    transport.send_and_expect('leave network', 'leave 0x')
+    transport.send_and_expect('network leave', 'leave', timeout=5)
+
+
+def __clear_keys(transport: BaseTransport) -> None:
+    transport.send('keys clear')
 
 
 def join_network(transport: BaseTransport, channel: int, distributed: int = 1):
+    __clear_keys(transport)
     leave_network(transport)
     _set_masks(transport, channel)
 
@@ -127,12 +132,12 @@ def join_network(transport: BaseTransport, channel: int, distributed: int = 1):
 def create_network(
     transport: BaseTransport, channel: int, pan_id: bytes, centralized: int
 ) -> bool:
-    if centralized != 0 or centralized != 1:
+    if centralized != 0 and centralized != 1:
         raise ValueError('centralized must be boolean')
     if len(pan_id) != 2:
-        raise ValueError('invalid pan_id')
-    if channel < 0 or channel > 17:
-        raise ValueError('invalid channel')
+        raise ValueError(f'invalid pan_id: [{pan_id.hex()}]')
+    if channel < 0 or channel > 19:
+        raise ValueError(f'invalid channel: [{channel}]')
     leave_network(transport)
     transport.send_and_expect(
         f'plugin network-creator form {centralized} 0x{pan_id.hex().upper()} 3 {channel}',

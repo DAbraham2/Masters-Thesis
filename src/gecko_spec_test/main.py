@@ -1,6 +1,8 @@
 import ast
 import os.path
 import sys
+import argparse
+import time
 
 from gst_utils.gs_logging import get_logger
 
@@ -10,27 +12,38 @@ import altwalker.run as runner
 
 logger = get_logger('gst_main')
 
+__main_parser = argparse.ArgumentParser()
+
 
 def __main() -> None:
+    args = __main_parser.parse_args()
+
     models: list[tuple] = [
-        ('./models/mp-model.json', 'quick_random(edge_coverage(100))')
+        # ('./models/mp-model.json', f'random(time_duration({args.duration}))'),
+        (
+            os.path.join(os.path.dirname(__file__), 'models/combined-model.json'),
+            'quick_random(vertex_coverage(100) && edge_coverage(100))',
+        ),
     ]
     res = graphwalker.check(models)
     logger.info(res)
 
     state = runner.verify(
-        test_package='combined_test_suite/tests', model_paths=['./models/mp-model.json']
+        test_package='combined/tests', model_paths=['./models/combined-model.json']
     )
 
-    if state['status'] is False:
+    if state['status'] is False and args.fix is False:
         logger.error(
             'Verification issues:\n%s\n%s\n%s',
             state['issues'],
             state['methods'],
             state['missing'],
         )
+        sys.exit(1)
+
+    if state['status'] is False and args.fix:
         with open(
-            os.path.join(os.path.dirname(__file__), 'combined_test_suite/tests/test.py')
+            os.path.join(os.path.dirname(__file__), 'combined/tests/test.py')
         ) as f:
             content = f.read()
             tree = ast.parse(content)
@@ -72,7 +85,7 @@ def __main() -> None:
 
         with open(
             os.path.join(
-                os.path.dirname(__file__), 'combined_test_suite/tests/test.py'
+                os.path.dirname(__file__), 'combined/tests/test.py'
             ),
             'w',
         ) as f:
@@ -80,11 +93,23 @@ def __main() -> None:
 
         sys.exit(1)
 
-    product = runner.online(
-        test_package='combined_test_suite/tests', models=models, executor_type='python'
+    logger.info(
+        '\n\n\n\n\n\n Test will run with the following criteria: %s \n\n\n\n\n\n',
+        models[0][1],
     )
+    start_time = time.perf_counter_ns()
+    product = runner.online(
+        test_package='combined/tests', models=models, executor_type='python'
+    )
+    end_time = time.perf_counter_ns()
     logger.info(product)
+
+    logger.info('Test lasted for %s seconds', ((end_time - start_time) / 1_000_000_000))
 
 
 if __name__ == '__main__':
+    __main_parser.add_argument('duration', help='Timeout duration in seconds', type=int)
+    __main_parser.add_argument(
+        '-f', '--fix', help='fix the module', action='store_true'
+    )
     __main()

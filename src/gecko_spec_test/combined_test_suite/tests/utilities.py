@@ -1,8 +1,21 @@
 import time
+from typing import Protocol
 
-from tenacity import retry, stop_after_attempt, retry_if_result, wait_random
+from tenacity import (
+    retry,
+    stop_after_attempt,
+    retry_if_result,
+    wait_random,
+    wait_exponential,
+)
+
+from gst_utils.gs_logging import get_logger
+from interface.ble import BleUtils
 from interface.ot import ThreadUtils
 from interface.zigbee import ZigbeeUtils
+
+
+logger = get_logger(__name__)
 
 
 class AddressNotFoundError(Exception):
@@ -18,13 +31,22 @@ def __return_last_value(retry_state):
     return retry_state.outcome.result()
 
 
+class Scanner(Protocol):
+    def scan_results(self) -> set[bytes]:
+        ...
+
+
 @retry(
     stop=stop_after_attempt(5),
     retry_error_callback=__return_last_value,
     retry=retry_if_result(__is_false),
+    wait=wait_exponential(0.5, min=1, max=10),
 )
-def address_in_scan(address: bytes, scans: set[bytes]) -> bool:
-    if address in scans:
+def address_in_scan(address: bytes, app: Scanner) -> bool:
+    results = app.scan_results()
+    logger.debug('desired address: %s', address)
+    logger.debug('scanned set: %s', results)
+    if address in results:
         return True
     return False
 
@@ -33,6 +55,7 @@ def address_in_scan(address: bytes, scans: set[bytes]) -> bool:
     stop=stop_after_attempt(5),
     retry_error_callback=__return_last_value,
     retry=retry_if_result(__is_false),
+    wait=wait_exponential(min=5, max=60),
 )
 def is_state(expected: str, dut: ThreadUtils) -> bool:
     return dut.get_thread_state() == expected
@@ -42,6 +65,7 @@ def is_state(expected: str, dut: ThreadUtils) -> bool:
     stop=stop_after_attempt(5),
     retry_error_callback=__return_last_value,
     retry=retry_if_result(__is_false),
+    wait=wait_exponential(min=5, max=60),
 )
 def is_child(dut: ThreadUtils) -> bool:
     return dut.get_thread_state() in ['child', 'router']

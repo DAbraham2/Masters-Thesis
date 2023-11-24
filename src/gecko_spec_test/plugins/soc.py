@@ -4,21 +4,13 @@ from typing import Callable, Optional
 
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 
+from gst_utils.ot_utils import _is_state
 from transport import BaseTransport
 from interface.ot import ThreadNetworkData
 from gst_utils.gs_logging import get_logger
+from gst_utils.cleaner import clean_cli_command
 
 logger = get_logger(__name__)
-
-
-def _is_state(line: str) -> bool:
-    valid_states = ['offline', 'disabled', 'detached', 'child', 'router', 'leader']
-    cleaned = line.strip()
-    for s in valid_states:
-        if s in cleaned:
-            return True
-
-    return False
 
 
 class OtUpCli:
@@ -42,7 +34,7 @@ class OtUpCli:
 
     @staticmethod
     def factory_reset(transport: BaseTransport):
-        transport.send('factory_reset')
+        transport.send_and_expect('factory_reset', 'Reset info:', timeout=5)
 
     @staticmethod
     def dataset_new(transport: BaseTransport):
@@ -72,6 +64,7 @@ class OtUpCli:
     def start_network(transport: BaseTransport) -> None:
         transport.send_and_expect('ifconfig_up', 'Status: 0x0')
         transport.send_and_expect('thread_start', 'Status: 0x0')
+        time.sleep(0.5)
 
     def get_ip_address(self, transport: BaseTransport) -> str:
         self.logger.debug('get_ip_address')
@@ -96,7 +89,7 @@ class OtUpCli:
     )
     def get_state(self, transport: BaseTransport) -> str:
         transport.send('thread_state')
-        time.sleep(0.01)
+        time.sleep(0.3)
         lines = transport.receive()
         self.logger.debug('get_state receive_queue: %s', lines)
         for line in lines:
@@ -109,10 +102,7 @@ class OtUpCli:
         self.logger.debug(
             '_handle_channel with actual: %s and expected: %s', actual, expected
         )
-        channel = actual
-        if actual.startswith(expected):
-            channel = channel.removeprefix(expected)
-        channel = channel.strip()
+        channel = clean_cli_command(actual, expected)
         try:
             chn = int(channel)
             if self._dataset is None:
@@ -125,10 +115,7 @@ class OtUpCli:
         self.logger.debug(
             '_handle_pan_id with actual: %s and expected: %s', actual, expected
         )
-        pan = actual
-        if actual.startswith(expected):
-            pan = pan.removeprefix(expected)
-        pan = pan.strip()
+        pan = clean_cli_command(actual, expected)
         b = bytes.fromhex(pan.removeprefix('0x'))
         if self._dataset is None:
             self._dataset = ThreadNetworkData(b, bytes(16), '', -1)
@@ -139,10 +126,7 @@ class OtUpCli:
         self.logger.debug(
             '_handle_ip_addr with actual: %s and expected: %s', actual, expected
         )
-        addr = actual
-        if actual.startswith(expected):
-            addr = addr.removeprefix(expected)
-        addr.strip()
+        addr = clean_cli_command(actual, expected)
         self._ip_address = addr
         self._ip_address_event.set()
 
@@ -150,7 +134,7 @@ class OtUpCli:
         self.logger.debug(
             '_handle_nwk_key Actual: [%s] -- Expected: [%s]', actual, expected
         )
-        line = actual.removeprefix(expected).strip()
+        line = clean_cli_command(actual, expected)
         self._dataset.network_key = bytes.fromhex(line)
 
     def _handle_nwk_name(self, actual: str, expected: str) -> None:
@@ -171,9 +155,12 @@ def _bytes_from_ble_address(original: str) -> bytes:
     cleaned = ''
     if original.removeprefix('['):
         cleaned = original.removeprefix('[').removesuffix(']').strip()
-
-    cleaned = cleaned.lower()
-    return bytes.fromhex(cleaned)
+    try:
+        cleaned = cleaned.lower()
+        return bytes.fromhex(cleaned)
+    except ValueError:
+        logger.critical('Could not convert address to bytes: <<%s>>', original)
+        return bytes(6)
 
 
 def _ble_address_from_bytes(original: bytes) -> str:
@@ -186,17 +173,24 @@ def _ble_address_from_bytes(original: bytes) -> str:
 
 
 class ZigbeeBleDmpCli:
-    def __init__(self, *, on_external_join: Optional[Callable] = None):
+    def __init__(
+        self,
+        *,
+        on_external_join: Optional[Callable] = None,
+        on_external_disc: Optional[Callable] = None,
+    ):
         self.logger = get_logger(__name__)
         self.__handlers = {
             'BLE address:': self._handle_address,
             'BLE connection opened': self._handle_conn_opened,
+            'BLE connection closed': self.__handle_conn_closed,
         }
         self._peripheral: bool = False
         self._in_scan: bool = False
         self._scan_result: set[bytes] = set()
         self._address: bytes = bytes(6)
         self.__on_external_join = on_external_join
+        self.__on_external_disconn = on_external_disc
 
     def get_handlers(self) -> dict[str, Callable[[str, str], None]]:
         return self.__handlers
@@ -211,9 +205,10 @@ class ZigbeeBleDmpCli:
         self.logger.debug(
             '_handle_address Actual: [%s] -- Expected: [%s]', actual, expected
         )
-        data = actual.removeprefix(expected).strip()
+        data = clean_cli_command(actual, expected)
         match self._in_scan:
             case True:
+                self.logger.debug('Adding to scans...')
                 self._scan_result.add(_bytes_from_ble_address(data))
             case False:
                 self._address = _bytes_from_ble_address(data)
@@ -224,6 +219,13 @@ class ZigbeeBleDmpCli:
         )
         if self.__on_external_join is not None:
             self.__on_external_join()
+
+    def __handle_conn_closed(self, actual: str, expected: str) -> None:
+        self.logger.debug(
+            '__handle_conn_closed Actual: [%s] -- Expected: [%s]', actual, expected
+        )
+        if self.__on_external_disconn is not None:
+            self.__on_external_disconn()
 
     def enter_connectable(
         self,
@@ -277,4 +279,4 @@ class ZigbeeBleDmpCli:
 
     @staticmethod
     def hello(transport: BaseTransport):
-        transport.send_and_expect('plugin ble hello', 'success')
+        transport.send_and_expect('plugin ble hello', 'success', timeout=5)

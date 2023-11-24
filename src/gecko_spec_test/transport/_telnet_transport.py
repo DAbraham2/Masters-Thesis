@@ -1,4 +1,6 @@
+import queue
 import threading
+import time
 from threading import Thread
 from queue import Queue
 from telnetlib import Telnet
@@ -8,6 +10,13 @@ from gst_utils.gs_logging import Logger, get_logger
 from .base_transport import BaseTransport
 
 _LINE_TERM = '\r\n'
+
+
+class ResponseNotFoundError(Exception):
+    def __init__(self, command: str, expect: str):
+        super().__init__(
+            f'Response expected [{expect}] but not found for command: [{command}]'
+        )
 
 
 def _decode_for_log(msg: bytes) -> str:
@@ -38,19 +47,19 @@ class TelnetTransport(BaseTransport):
         else:
             self.logger = logger
 
-        self.send_and_expect('\n', '>', timeout=5)
-
         self._queue: Queue = Queue(100)
         self._reader_thread: threading.Thread = Thread(
             target=self._parser_function, daemon=True
         )
         self._run = False
         self._handlers: dict[str, list[Callable[[str, str], None]]] = {}
+        # self.send_and_expect('\n', '>', timeout=5)
 
     def __del__(self):
         """
         Deconstruct
         """
+        self.logger.info('Deconstructing self...')
         if self._reader_thread.is_alive():
             self._run = False
             self._reader_thread.join(10)
@@ -59,15 +68,34 @@ class TelnetTransport(BaseTransport):
 
     def send(self, message: str) -> None:
         self.logger.debug('TX: [%s]', message)
-        msg = message + _LINE_TERM
+        msg = message + '\n'
         msg = msg.encode('ascii')
         self._connection.write(msg)
 
-    def send_and_expect(self, msg: str, expect: str, *, timeout: float = 1) -> str:
+    def send_and_expect(
+        self, msg: str, expect: str, *, timeout: float = 15
+    ) -> list[str] | str:
+        checked_lines = []
         self.send(msg)
-        data = self._connection.read_until(expect.encode(), timeout)
-
-        return data.decode('ascii')
+        start_time = time.perf_counter_ns()
+        current_time = start_time
+        to = int(1_000_000_000 * timeout)
+        while current_time - start_time < to:
+            try:
+                line = self._queue.get(timeout=0.1)
+                checked_lines.append(line)
+                if expect in line:
+                    return checked_lines
+            except queue.Empty:
+                self.logger.info('Trying to send new line to cli...')
+                self.send('')
+                time.sleep(0.3)
+                continue
+            finally:
+                current_time = time.perf_counter_ns()
+        self.logger.critical('Timeout reached for command: [%s]...', msg)
+        self.logger.debug('checked lines: <<%s>>', checked_lines)
+        raise ResponseNotFoundError(msg, expect)
 
     def register_handler(self, handler: Callable[[], None], expect: str) -> int:
         if expect not in self._handlers.keys():
@@ -91,10 +119,10 @@ class TelnetTransport(BaseTransport):
     def start_connection(self) -> bool:
         self.logger.info('Connection starting...')
         self._connection.open(self.ip, self.port)
-        self.send_and_expect('\n', '>', timeout=5)
         self._run = True
         self._reader_thread.daemon = True
         self._reader_thread.start()
+        self.send_and_expect('\n', '>', timeout=5)
         return True
 
     def stop_connection(self) -> bool:
@@ -109,7 +137,7 @@ class TelnetTransport(BaseTransport):
         term = _LINE_TERM.encode()
         left_out = b''
         while self._run:
-            data = self._connection.read_until(term, timeout=0.2)
+            data = self._connection.read_until(term, timeout=0.3)
             if term not in data:
                 left_out += data
                 continue
@@ -126,7 +154,7 @@ class TelnetTransport(BaseTransport):
                     self.logger.debug('RX: [%s]', clean)
                     self.__add_to_queue(clean)
                     self._handler_task(clean)
-            self.logger.debug('Full RX: [%s]', _decode_for_log(data))
+            # self.logger.debug('Full RX: [%s]', _decode_for_log(data))
 
     def _handler_task(self, line: str) -> None:
         for k in self._handlers.keys():
@@ -140,4 +168,4 @@ class TelnetTransport(BaseTransport):
             for _ in range(50):
                 self._queue.get_nowait()
 
-        self._queue.put_nowait(line)
+        self._queue.put(line, timeout=0.1)

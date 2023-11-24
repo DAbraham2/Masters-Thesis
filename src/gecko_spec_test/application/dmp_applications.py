@@ -19,13 +19,18 @@ class DmpApplication(
     def __init__(self, transport: BaseTransport):
         self._transport = transport
         self._thread = OtUpCli()
-        self._ble = ZigbeeBleDmpCli(on_external_join=self.__ble_peri_join)
+        self._ble = ZigbeeBleDmpCli(
+            on_external_join=self.__ble_peri_join, on_external_disc=self.__ble_peri_disc
+        )
         self._ble_state = BleState.STANDBY
         self._zigbee = ZigbeeCore()
 
         self._init_handlers()
 
         self._transport.start_connection()
+
+    def __del__(self):
+        del self._transport
 
     def _init_handlers(self):
         for k, v in self._thread.get_handlers().items():
@@ -132,3 +137,6 @@ class DmpApplication(
 
     def __ble_peri_join(self) -> None:
         self._ble_state = BleState.CONNECTION
+
+    def __ble_peri_disc(self) -> None:
+        self._ble_state = BleState.STANDBY

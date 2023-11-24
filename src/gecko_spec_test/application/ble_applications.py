@@ -2,6 +2,7 @@ import time
 
 import bgapi.connector
 from bgapi import BGLib
+from bgapi.bglib import CommandFailedError
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 from gst_utils.gs_logging import get_logger
@@ -60,7 +61,13 @@ class BleNcp(InitiatorBleDevice, MinimalBleDevice, BleUtils):
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(0.25, min=1, max=10))
     def start_scanning(self) -> bool:
-        self._bgapi.bt.scanner.start(0x1, 0x2)
+        self.logger.debug('starting scan...')
+        try:
+            self._bgapi.bt.scanner.start(0x1, 0x2)
+        except CommandFailedError as e:
+            self.logger.critical('Error: %a', e)
+            self.reset()
+            raise
         self._state = BleState.SCANNING
         return True
 
@@ -70,16 +77,16 @@ class BleNcp(InitiatorBleDevice, MinimalBleDevice, BleUtils):
         return True
 
     def start_advertising(self) -> bool:
-        _, self._adv_handler = self._bgapi.bt.advertisier.create_set()
+        _, self._adv_handler = self._bgapi.bt.advertiser.create_set()
         self.logger.debug('Advertiser set is: %s', self._adv_handler)
         _ = self._bgapi.bt.legacy_advertiser.start(self._adv_handler, 0x2)
         self._state = BleState.ADVERTISING
-
+        time.sleep(0.3)
         return True
 
     def stop_advertising(self) -> bool:
-        _ = self._bgapi.bt.advertisier.stop(self._adv_handler)
-        _ = self._bgapi.bt.advertisier.delete_set(self._adv_handler)
+        _ = self._bgapi.bt.advertiser.stop(self._adv_handler)
+        _ = self._bgapi.bt.advertiser.delete_set(self._adv_handler)
         self._adv_handler = -1
         self._state = BleState.STANDBY
         return True
@@ -122,5 +129,6 @@ class BleNcp(InitiatorBleDevice, MinimalBleDevice, BleUtils):
         return False
 
     def reset(self):
+        self.logger.debug('resetting...')
         self._bgapi.bt.system.reset(0)
         time.sleep(2)

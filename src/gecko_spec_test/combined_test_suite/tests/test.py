@@ -59,7 +59,7 @@ class OtBle:
         assert is_child(self.dut) is True
         assert compare_datasets(self.dut, self.ot) is True
         addr = self.ble.get_address()
-        assert address_in_scan(addr, self.dut.scan_results()) is True
+        assert address_in_scan(addr, self.dut) is True
 
     def v_child_stand(self):
         assert is_child(self.dut) is True
@@ -83,7 +83,7 @@ class OtBle:
     def v_disabled_scan(self):
         assert is_state('disabled', self.dut)
         addr = self.ble.get_address()
-        assert address_in_scan(addr, self.dut.scan_results()) is True
+        assert address_in_scan(addr, self.dut) is True
 
     def v_disabled_standby(self):
         assert is_state('disabled', self.dut)
@@ -169,7 +169,7 @@ class OtBle:
     def v_leader_scan(self):
         assert is_state('leader', self.dut)
         addr = self.ble.get_address()
-        assert address_in_scan(addr, self.dut.scan_results()) is True
+        assert address_in_scan(addr, self.dut) is True
 
     def e_ot_leader_drop(self):
         self.ot.factory_reset()
@@ -206,7 +206,7 @@ class ZigBle:
 
     def v_disconnected_scanning(self):
         addr = self.ble.get_address()
-        assert address_in_scan(addr, self.dut.scan_results())
+        assert address_in_scan(addr, self.dut)
 
     def v_joined_advertising(self):
         assert compare_zig_states(self.dut, self.zig) is True
@@ -225,7 +225,7 @@ class ZigBle:
     def v_joined_scanning(self):
         assert compare_zig_states(self.dut, self.zig) is True
         addr = self.ble.get_address()
-        assert address_in_scan(addr, self.dut.scan_results())
+        assert address_in_scan(addr, self.dut)
 
     def v_joined_standby(self):
         assert compare_zig_states(self.dut, self.zig) is True
@@ -246,7 +246,7 @@ class ZigBle:
 
     def v_tp_scanning(self):
         addr = self.ble.get_address()
-        assert address_in_scan(addr, self.dut.scan_results()) is True
+        assert address_in_scan(addr, self.dut) is True
 
     def v_tp_standby(self):
         assert dut_connection == -1
@@ -360,12 +360,16 @@ class SingleZigbee:
     def e_add_ot(self):
         i1 = self.zig.get_zig_state()
         self.ot.create_network(channel=i1.channel, pan_id=i1.pan_id)
+        time.sleep(0.5)
+        d = self.ot.get_dataset()
+        self.dut.join_network_with_nwk_key(d.network_key)
+        time.sleep(0.2)
 
     def e_analyze_data(self):
         self.logger.warning('Not implemented...')
 
     def e_init_helper(self):
-        channel = random.randint(11, 20)
+        channel = random.randint(11, 18)
 
         while True:
             pan_id = random.randbytes(2)
@@ -498,6 +502,7 @@ class SingleProt:
 
     def v_single_thread(self):
         assert_that(self.ot_state).is_not_same_as('')
+        assert_that(is_state('leader', self.ot)).is_true()
 
     def v_single_zig(self):
         assert_that(self.zig_state).is_not_none()
@@ -558,7 +563,7 @@ class SingleBle:
     def v_advertising(self):
         assert self.dut.get_state() == BleState.ADVERTISING
         addr = self.dut.get_address()
-        result = self.helper.expect_scan(addr, timeout=0.5)
+        result = self.helper.expect_scan(addr, timeout=15)
         assert result is True
 
     def v_connection_as_central(self):
@@ -577,7 +582,7 @@ class SingleBle:
         assert BleState.SCANNING == self.dut.get_state()
         addr = self.helper.get_address()
         self.logger.debug('address: [%s]', addr.hex())
-        found_helper = address_in_scan(addr, self.dut.scan_results())
+        found_helper = address_in_scan(addr, self.dut)
         assert found_helper is True
 
     def v_standby(self):
@@ -590,6 +595,10 @@ class SingleBle:
         global helper_connection
         addr = self.dut.get_address()
         _, helper_connection = self.helper.init_connection(addr)
+        self.logger.debug('Connection handler set to: %s', helper_connection)
+        drop = self.helper.expect_drop(helper_connection, timeout=0.5)
+
+        assert_that(drop).is_false()
 
     def e_connect_to_device(self):
         self.logger.debug('e_connect_to_device')
@@ -604,6 +613,7 @@ class SingleBle:
         global helper_connection
         self.helper.disconnect(helper_connection)
         helper_connection = -1
+        setattr(self.dut, '_ble_state', BleState.STANDBY)
 
     def e_disconnect_from_helper(self):
         self.logger.debug('e_disconnect_from_helper')
