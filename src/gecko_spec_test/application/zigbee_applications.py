@@ -34,11 +34,8 @@ class ZigbeeSoc(ZigbeeUtils, ZigbeeCoordinator, ZigbeeThroughputable):
     def create_network(self, channel: int, pan_id: bytes):
         create_network(self._transport, channel, pan_id, 0)
 
-    def start_throughput(self) -> bool:
-        raise NotImplementedError()
-
-    def wait_for_results(self) -> float:
-        raise NotImplementedError()
+    def start_throughput(self, remote_node_id: bytes) -> float:
+        return zig_cli.send_data_to_remote(self._transport, remote_node_id)
 
     def reset(self):
         zig_cli.leave_network(self._transport)

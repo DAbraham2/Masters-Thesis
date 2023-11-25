@@ -96,7 +96,7 @@ class ZigbeeCore:
 
     def info(self, transport: BaseTransport):
         self.on_info.clear()
-        transport.send('info')
+        transport.send_and_expect('info', 'network state')
 
     def get_state(self) -> ZigbeeStatus:
         if self._status is None and self.on_info.wait(0.5) is False:
@@ -107,12 +107,12 @@ class ZigbeeCore:
 def _set_masks(transport: BaseTransport, channel: int) -> None:
     transport.send_and_expect('plugin network-steering mask set 1 0', 'Set')
     transport.send_and_expect('plugin network-steering mask set 2 0', 'Set')
-    transport.send_and_expect(f'plugin network-steering mask set 1 {channel}', 'Set')
-    transport.send_and_expect(f'plugin network-steering mask set 2 {channel}', 'Set')
+    transport.send_and_expect(f'plugin network-steering mask add 1 {channel}', 'now')
+    transport.send_and_expect(f'plugin network-steering mask add 2 {channel}', 'now')
 
 
 def leave_network(transport: BaseTransport) -> None:
-    transport.send_and_expect('network leave', 'leave', timeout=5)
+    transport.send_and_expect('network leave', 'leave 0x', timeout=5)
 
 
 def __clear_keys(transport: BaseTransport) -> None:
@@ -125,7 +125,7 @@ def join_network(transport: BaseTransport, channel: int, distributed: int = 1):
     _set_masks(transport, channel)
 
     transport.send_and_expect(
-        f'plugin network-steering start {distributed}', 'EMBER_NETWORK_UP', timeout=10
+        f'plugin network-steering start {distributed}', 'EMBER_NETWORK_UP', timeout=30
     )
 
 
@@ -136,7 +136,7 @@ def create_network(
         raise ValueError('centralized must be boolean')
     if len(pan_id) != 2:
         raise ValueError(f'invalid pan_id: [{pan_id.hex()}]')
-    if channel < 0 or channel > 19:
+    if channel < 0 or channel > 26:
         raise ValueError(f'invalid channel: [{channel}]')
     leave_network(transport)
     transport.send_and_expect(
@@ -152,3 +152,35 @@ def create_network(
     )
 
     return True
+
+
+def get_tp_counters(result: str) -> float:
+    """Success messages: 10 out of 10"""
+    s = result.split(':')[1]
+    r = s.split('out of')
+    success = int(r[0].strip())
+    total = int(r[1].strip())
+
+    return success / total
+
+
+def send_data_to_remote(
+    transport: BaseTransport,
+    remote_node_id: bytes,
+    *,
+    packet_num: int = 10,
+    interval: int = 2000,
+    packet_size: int = 127,
+    simultaneous_packets: int = 1,
+    aps: int = 0,
+    timeout: int = 400000,
+) -> float:
+    _ = transport.send_and_expect('option print-rx-msgs disable', 'disabled')
+    _ = transport.send_and_expect(
+        f'plugin throughput set-all 0x{remote_node_id.hex()} {packet_num} {interval} {packet_size} {simultaneous_packets} {aps} {timeout}',
+        'PARAMETERS',
+    )
+
+    result = transport.send_and_expect('plugin throughput start', 'Success messages:')
+
+    return get_tp_counters(result)

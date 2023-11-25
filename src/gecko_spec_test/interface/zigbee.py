@@ -27,7 +27,7 @@ class ZigbeeCoordinator(Protocol):
 
 
 class ZigbeeThroughputable(Protocol):
-    def start_throughput(self) -> bool:
+    def start_throughput(self, remote_node_id: bytes) -> float:
         ...
 
     def wait_for_results(self) -> float:

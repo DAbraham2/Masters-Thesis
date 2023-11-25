@@ -21,6 +21,7 @@ def ping(transport: BaseTransport, remote_address: str) -> None:
     :param remote_address:
     :return:
     """
+    logger.debug('ping remote: <<%s>>', remote_address)
     result = transport.send_and_expect(f'ping {remote_address} 50 1 2000', 'Done')
     logger.debug('\n\nping result: %s\n\n', result)
 
@@ -102,6 +103,7 @@ class OtFtdCli:
     def dataset(self, transport: BaseTransport) -> ThreadNetworkData:
         if self._dataset.channel == -1:
             transport.send_and_expect('dataset active', 'Done')
+            time.sleep(0.5)
 
         return self._dataset
 

@@ -96,11 +96,8 @@ class DmpApplication(
     def leave_network(self):
         zig_cli.leave_network(self._transport)
 
-    def start_throughput(self) -> bool:
-        raise NotImplementedError()
-
-    def wait_for_results(self) -> float:
-        raise NotImplementedError()
+    def start_throughput(self, remote_node_id: bytes) -> float:
+        return zig_cli.send_data_to_remote(self._transport, remote_node_id)
 
     def get_dataset(self) -> ThreadNetworkData:
         return self._thread.get_dataset(self._transport)
@@ -111,6 +108,7 @@ class DmpApplication(
     def factory_reset(self) -> None:
         setattr(self._ble, '_in_scan', False)
         self._thread.factory_reset(self._transport)
+        self._transport.send_and_expect('', '>')
 
     def join_thread_network(self, channel: int, pan_id: bytes):
         self._thread.set_channel(self._transport, channel=channel)

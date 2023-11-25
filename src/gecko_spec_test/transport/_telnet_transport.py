@@ -76,6 +76,7 @@ class TelnetTransport(BaseTransport):
         self, msg: str, expect: str, *, timeout: float = 15
     ) -> list[str] | str:
         checked_lines = []
+        self._queue = Queue(100)
         self.send(msg)
         start_time = time.perf_counter_ns()
         current_time = start_time
@@ -152,8 +153,8 @@ class TelnetTransport(BaseTransport):
                 clean = line.strip()
                 if clean != '':
                     self.logger.debug('RX: [%s]', clean)
-                    self.__add_to_queue(clean)
                     self._handler_task(clean)
+                    self.__add_to_queue(clean)
             # self.logger.debug('Full RX: [%s]', _decode_for_log(data))
 
     def _handler_task(self, line: str) -> None:
@@ -164,6 +165,8 @@ class TelnetTransport(BaseTransport):
                     h(line, k)
 
     def __add_to_queue(self, line: str) -> None:
+        if 'Scan response' in line:
+            return
         if self._queue.qsize() > 98:
             for _ in range(50):
                 self._queue.get_nowait()

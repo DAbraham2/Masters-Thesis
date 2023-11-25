@@ -1,4 +1,5 @@
 import ast
+import json
 import os.path
 import sys
 import argparse
@@ -25,6 +26,7 @@ def __main() -> None:
             'quick_random(vertex_coverage(100) && edge_coverage(100))',
         ),
     ]
+
     res = graphwalker.check(models)
     logger.info(res)
 
@@ -84,9 +86,7 @@ def __main() -> None:
         ast.fix_missing_locations(tree)
 
         with open(
-            os.path.join(
-                os.path.dirname(__file__), 'combined/tests/test.py'
-            ),
+            os.path.join(os.path.dirname(__file__), 'combined/tests/test.py'),
             'w',
         ) as f:
             f.write(ast.unparse(tree))
@@ -97,6 +97,7 @@ def __main() -> None:
         '\n\n\n\n\n\n Test will run with the following criteria: %s \n\n\n\n\n\n',
         models[0][1],
     )
+
     start_time = time.perf_counter_ns()
     product = runner.online(
         test_package='combined/tests', models=models, executor_type='python'

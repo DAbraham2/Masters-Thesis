@@ -21,8 +21,13 @@ def _reset_devices() -> None:
         with Telnet(ip, 4902) as conn:
             conn.write(b'sys reset sys\n')
             logger.info('reset device on: %s', ip)
+            time.sleep(2)
+            try:
+                conn.write(b'\n')
+            except OSError:
+                logger.info('connection closed successfully')
 
-    time.sleep(3)
+    time.sleep(5)
 
 
 class MpScenario:

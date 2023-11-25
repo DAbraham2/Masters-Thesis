@@ -56,8 +56,8 @@ class OtUpCli:
     def set_pan_id(transport: BaseTransport, *, pan_id: bytes) -> None:
         transport.send(f'dataset_pan_id 0x{pan_id.hex()}')
 
-    @staticmethod
-    def ping(transport: BaseTransport, remote_address: str) -> None:
+    def ping(self, transport: BaseTransport, remote_address: str) -> None:
+        self.logger.debug('pinging remote: <<%s>>', remote_address)
         transport.send_and_expect(f'ping_ipaddr {remote_address}', 'Status: 0x0')
 
     @staticmethod
@@ -73,13 +73,22 @@ class OtUpCli:
             return self._ip_address
         self._ip_address_event.clear()
         transport.send('thread_ipaddr')
-        self._ip_address_event.wait(10.0)
-        return self._ip_address
+        time.sleep(0.1)
+        transport.send('')
+        res = self._ip_address_event.wait(10.0)
+        if res:
+            return self._ip_address
+
+        raise Exception()
 
     def get_dataset(self, transport: BaseTransport) -> ThreadNetworkData:
         self.logger.debug('get_dataset')
+        time.sleep(0.05)
+        transport.send('dataset_get_active')
         transport.send('dataset')
-
+        time.sleep(0.1)
+        transport.send('')
+        time.sleep(0.5)
         return self._dataset
 
     @retry(
@@ -91,6 +100,11 @@ class OtUpCli:
         transport.send('thread_state')
         time.sleep(0.3)
         lines = transport.receive()
+        if lines == []:
+            transport.send('')
+            time.sleep(0.3)
+            lines = transport.receive()
+
         self.logger.debug('get_state receive_queue: %s', lines)
         for line in lines:
             if _is_state(line.strip()):
@@ -116,11 +130,14 @@ class OtUpCli:
             '_handle_pan_id with actual: %s and expected: %s', actual, expected
         )
         pan = clean_cli_command(actual, expected)
-        b = bytes.fromhex(pan.removeprefix('0x'))
-        if self._dataset is None:
-            self._dataset = ThreadNetworkData(b, bytes(16), '', -1)
+        try:
+            b = bytes.fromhex(pan.removeprefix('0x'))
+            if self._dataset is None:
+                self._dataset = ThreadNetworkData(b, bytes(16), '', -1)
 
-        self._dataset.pan_id = b
+            self._dataset.pan_id = b
+        except ValueError:
+            self.logger.error('Not valid pan id: %s', pan)
 
     def _handle_ip_addr(self, actual: str, expected: str) -> None:
         self.logger.debug(
@@ -135,13 +152,20 @@ class OtUpCli:
             '_handle_nwk_key Actual: [%s] -- Expected: [%s]', actual, expected
         )
         line = clean_cli_command(actual, expected)
-        self._dataset.network_key = bytes.fromhex(line)
+        try:
+            if self._dataset is None:
+                self._dataset = ThreadNetworkData()
+            self._dataset.network_key = bytes.fromhex(line)
+        except ValueError:
+            self.logger.error('Not valid network key: %s', line)
 
     def _handle_nwk_name(self, actual: str, expected: str) -> None:
         self.logger.debug(
             '_handle_nwk_name Actual: [%s] -- Expected: [%s]', actual, expected
         )
         line = actual.removeprefix(expected).strip()
+        if self._dataset is None:
+            self._dataset = ThreadNetworkData()
         self._dataset.network_name = line
 
 
@@ -206,12 +230,15 @@ class ZigbeeBleDmpCli:
             '_handle_address Actual: [%s] -- Expected: [%s]', actual, expected
         )
         data = clean_cli_command(actual, expected)
-        match self._in_scan:
-            case True:
-                self.logger.debug('Adding to scans...')
-                self._scan_result.add(_bytes_from_ble_address(data))
-            case False:
-                self._address = _bytes_from_ble_address(data)
+        try:
+            match self._in_scan:
+                case True:
+                    self.logger.debug('Adding to scans...')
+                    self._scan_result.add(_bytes_from_ble_address(data))
+                case False:
+                    self._address = _bytes_from_ble_address(data)
+        except ValueError:
+            self.logger.error('Not valid ble address: %s', data)
 
     def _handle_conn_opened(self, actual, expected) -> None:
         self.logger.debug(
@@ -258,6 +285,7 @@ class ZigbeeBleDmpCli:
     def stop_scan(self, transport: BaseTransport):
         transport.send_and_expect('plugin ble gap stop-scan', 'success')
         self._in_scan = False
+        self._scan_result = set()
 
     def scan_config(
         self, transport: BaseTransport, *, mode: int, interval: int, window: int
@@ -268,14 +296,18 @@ class ZigbeeBleDmpCli:
         if self._address != bytes(6):
             return self._address
 
-        transport.send('plugin ble get address')
+        transport.send_and_expect('plugin ble get address', 'BLE address:', timeout=5)
         for _ in range(10):
             if self._address != bytes(6):
                 return self._address
             time.sleep(0.4)
 
+        raise Exception()
+
     def get_scan_results(self):
-        return self._scan_result
+        scans = self._scan_result.copy()
+        self._scan_result = set()
+        return scans
 
     @staticmethod
     def hello(transport: BaseTransport):

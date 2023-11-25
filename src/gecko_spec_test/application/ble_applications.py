@@ -1,11 +1,12 @@
 import time
+from queue import Queue
 
 import bgapi.connector
 from bgapi import BGLib
 from bgapi.bglib import CommandFailedError
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-from gst_utils.gs_logging import get_logger
+from gst_utils.gs_logging import get_logger, log
 from interface.ble import InitiatorBleDevice, MinimalBleDevice, BleUtils, BleState
 
 
@@ -99,10 +100,12 @@ class BleNcp(InitiatorBleDevice, MinimalBleDevice, BleUtils):
         self.logger.debug(f'get_address-> {addr}')
         return _bytes_from_address(addr)
 
+    @log
     def expect_scan(self, remote_address: bytes, *, timeout: float = 15) -> bool:
         address = _address_from_bytes(remote_address)
         for evt in self._bgapi.gen_events(timeout=None, max_time=timeout):
             s_evt = str(evt)
+            self.logger.debug('Event <<%s>>', s_evt)
             if (
                 'bt_evt_scanner_legacy_advertisement_report' in s_evt
                 and address in s_evt
@@ -127,6 +130,9 @@ class BleNcp(InitiatorBleDevice, MinimalBleDevice, BleUtils):
                 return True
 
         return False
+
+    def clear_events(self):
+        self._bgapi.event_queue = Queue()
 
     def reset(self):
         self.logger.debug('resetting...')
