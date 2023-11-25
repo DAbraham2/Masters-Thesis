@@ -22,10 +22,10 @@ RUN pip install --no-cache-dir -r requirements.txt \
 
 
 COPY application ./application
-COPY combined_test_suite ./combined_test_suite
+COPY combined ./combined
 COPY gst_utils ./gst_utils
 COPY interface ./interface
-COPY models/mp-model.json ./models/
+COPY models/combined-model.json ./models/
 COPY plugins ./plugins
 COPY scenario ./scenario
 COPY transport ./transport

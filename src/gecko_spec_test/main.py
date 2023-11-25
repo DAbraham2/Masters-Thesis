@@ -22,7 +22,7 @@ def __main() -> None:
     models: list[tuple] = [
         # ('./models/mp-model.json', f'random(time_duration({args.duration}))'),
         (
-            os.path.join(os.path.dirname(__file__), 'models/combined-model.json'),
+            os.path.join(os.path.dirname(__file__), 'models', 'combined-model.json'),
             'quick_random(vertex_coverage(100) && edge_coverage(100))',
         ),
     ]

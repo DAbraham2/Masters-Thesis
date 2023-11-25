@@ -21,6 +21,7 @@ class BaseTransport(Protocol):
     ) -> list[str] | str:
         """
         Send a message to a device and expect an output
+        :rtype: object
         :param timeout:
         :param msg: content of the message
         :param expect: expected string
