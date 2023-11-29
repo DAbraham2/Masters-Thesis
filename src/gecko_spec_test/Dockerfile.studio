@@ -1,0 +1,11 @@
+# syntax=docker/dockerfile:1
+
+FROM amazoncorretto:17
+
+WORKDIR /app
+
+COPY graphwalker-studio-4.3.2.jar ./
+
+EXPOSE 9090
+
+CMD ["java", "-jar", "graphwalker-studio-4.3.2.jar"]

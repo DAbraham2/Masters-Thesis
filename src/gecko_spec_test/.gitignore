@@ -1,0 +1,4 @@
+**/venv
+**/.idea
+**/report.json
+**/*.pyc

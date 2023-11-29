@@ -1,0 +1,45 @@
+name: Test and analyze software components
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r src/gecko_spec_test/test-requirements.txt
+      - name: Unit tests
+        run: |
+          pytest --cov=src/gecko_spec_test --cov-report xml --cov-branch src/gecko_spec_test/unit_tests
+        continue-on-error: true
+      - name: Ruff analyis
+        run: |
+          pip install ruff
+          ruff check src/gecko_spec_test -o ruff_report.json --output-format=json -v
+        continue-on-error: true
+      - name: Ruff conversion
+        run: |
+          less ruff_report.json
+          python src/tools/relative_report_fixer.py
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
