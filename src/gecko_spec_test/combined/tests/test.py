@@ -236,7 +236,14 @@ class CombinedModel:
     @log
     def e_zig_join(self):
         i1 = self.zig.get_zig_state()
-        self.dut.join_network(i1.channel)
+        for _ in range(5):
+            try:
+                self.dut.join_network(i1.channel)
+                break
+            except ResponseNotFoundError as e:
+                if _ == 4:
+                    raise e
+                continue
 
     @log
     def v_standby_child_disconnected(self):

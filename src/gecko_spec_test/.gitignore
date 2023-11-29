@@ -2,3 +2,8 @@
 **/.idea
 **/report.json
 **/*.pyc
+graphwalker-cli-*.jar
+graphwalker-studio-*.jar
+**/log
+**/*.log
+**/_pycache__
