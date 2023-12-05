@@ -6,7 +6,7 @@ import argparse
 import time
 
 from gst_utils.gs_logging import get_logger
-
+from scenario import mp
 import altwalker.graphwalker as graphwalker
 import altwalker.run as runner
 
@@ -20,10 +20,9 @@ def __main() -> None:
     args = __main_parser.parse_args()
 
     models: list[tuple] = [
-        # ('./models/mp-model.json', f'random(time_duration({args.duration}))'),
         (
             os.path.join(os.path.dirname(__file__), 'models', 'combined-model.json'),
-            'random(vertex_coverage(100) && edge_coverage(100))',
+            'random(vertex_coverage(100) && edge_coverage(80))',
         ),
     ]
 
@@ -98,6 +97,8 @@ def __main() -> None:
         models[0][1],
     )
 
+    mp.add_configuration(args.dut, args.ble, args.zig, args.ot)
+
     start_time = time.perf_counter_ns()
     product = runner.online(
         test_package='combined/tests', models=models, executor_type='python'
@@ -109,7 +110,10 @@ def __main() -> None:
 
 
 if __name__ == '__main__':
-    __main_parser.add_argument('duration', help='Timeout duration in seconds', type=int)
+    __main_parser.add_argument('dut', help='SUT ip address')
+    __main_parser.add_argument('ble', help='BLE helper ip address')
+    __main_parser.add_argument('zig', help='Zigbee helper ip address')
+    __main_parser.add_argument('ot', help='Thread helper ip address')
     __main_parser.add_argument(
         '-f', '--fix', help='fix the module', action='store_true'
     )

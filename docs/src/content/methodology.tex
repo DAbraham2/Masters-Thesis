@@ -87,6 +87,11 @@ The whole architecture is shown in \autoref{fig:meth:arch}
 
 I prepared a docker file that contains the adaptor code. It facilitates redistribution and ease of use. Docker is helpful because although altwalker is used, the test runner must also install graphwalker. Many companies have strict policies on what can be installed on company devices, and using docker is safe because it has a base image with graphwalker already installed.
 
-The test setup consists of a test runner connected to a local network. Silicon Labs' WPKs are connected to the network as well. The test runner controls and monitors all the physical devices. <<figure>> shows the test setup overview.
+The test setup consists of a test runner connected to a local network. Silicon Labs' WPKs are connected to the network as well. The test runner controls and monitors all the physical devices. \autoref{fig:meth:ota} shows the test setup overview.
 
-<<figure test setup>>
+\begin{figure}
+    \centering
+    \includegraphics[width=120mm, keepaspectratio]{figures/test_setup.png}
+    \caption{Overall test architecture}
+    \label{fig:meth:ota}
+\end{figure}

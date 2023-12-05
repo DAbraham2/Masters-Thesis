@@ -17,7 +17,7 @@ logger = get_logger(__name__)
 
 
 def _reset_devices() -> None:
-    for ip in ['10.150.64.19', '10.150.64.18', '10.150.64.17', '10.150.64.14']:
+    for ip in [_dut_ip, _zig_ip, _ble_ip, _ot_ip]:
         with Telnet(ip, 4902) as conn:
             conn.write(b'sys reset sys\n')
             logger.info('reset device on: %s', ip)
@@ -30,6 +30,21 @@ def _reset_devices() -> None:
     time.sleep(5)
 
 
+_dut_ip = '127.0.0.1'
+_zig_ip = '127.0.0.1'
+_ble_ip = '127.0.0.1'
+_ot_ip = '127.0.0.1'
+
+
+def add_configuration(dut_ip: str, ble_ip: str, zig_ip: str, ot_ip: str) -> None:
+    global _dut_ip, _zig_ip, _ble_ip, _ot_ip
+    logger.info('%s - %s - %s - %s', dut_ip, ble_ip, zig_ip, ot_ip)
+    _dut_ip = dut_ip
+    _ble_ip = ble_ip
+    _zig_ip = zig_ip
+    _ot_ip = ot_ip
+
+
 class MpScenario:
     def __init__(self):
         self.logger = get_logger('gecko_spec.MpScenario')
@@ -39,24 +54,23 @@ class MpScenario:
         self.dut: Optional[DmpApplication] = None
 
     def config(self):
+        global _ble_ip, _dut_ip, _zig_ip, _ot_ip
         _reset_devices()
 
-        ble_conn = bgapi.SocketConnector('10.150.64.19', port=4901)
+        ble_conn = bgapi.SocketConnector(_ble_ip, port=4901)
         ble_api = os.path.join(os.path.dirname(__file__), 'sl_bt.xapi')
         self.ble_helper = BleNcp(ble_conn, ble_api)
 
         dut_conn = transport.transport_factory(
-            'efr', '10.150.64.17', application_name='dut_sqa_dmp_cmp'
+            'efr', _dut_ip, application_name='dut_sqa_dmp_cmp'
         )
         self.dut = DmpApplication(dut_conn)
 
-        ot_conn = transport.transport_factory(
-            'efr', '10.150.64.18', application_name='ot_ftd'
-        )
+        ot_conn = transport.transport_factory('efr', _ot_ip, application_name='ot_ftd')
         self.ot_helper = OtFtdSoc(ot_conn)
 
         zig_conn = transport.transport_factory(
-            'efr', '10.150.64.14', application_name='z3_light'
+            'efr', _zig_ip, application_name='z3_light'
         )
         self.zig_helper = ZigbeeSoc(zig_conn)
 

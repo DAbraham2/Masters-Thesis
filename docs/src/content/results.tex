@@ -1,6 +1,36 @@
 \chapter{Results}
 \section{Overview}
+The main goal of testing was to find any functional defects in the multiprotocol application. The test runner was configured to achieve 100 percent vertex and at least 80 percent edge coverage. As the number of edges reached almost one hundred, the reduction of edge coverage helped reduce testing time.
 
-\section{Functional results}
 
-\section{Extra-functional results}
+For the first attempts, a default formed from the execution of the model. After running more and more times, I found out that resetting the thread stack of the application(thread factory\_reset) caused the drop of a formed BLE connection.
+
+
+This behavior is not desirable because if there is an ongoing operation on the BLE side when the reset comes, it could cause other malfunctions at the application level.
+
+
+During the literature review phase of the thesis, I noticed that Nordic - another manufacturer - published a limiting factor for multiprotocol scenarios \footnote{\url{https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/protocols/multiprotocol/index.html}}. During BLE scanning, the 15.4 stack could expect packet drops. Considering this, I prepared the adaptor code to be flexible on Zigbee and Thread operations. Having a rigid code would cause false negative test results.
+
+
+After modifying the test suite, I noticed a significant success rate drop on Zigbee joins while the BLE stack was scanning. The successes dropped to roughly 70 percent. Anything less than 50 percent would be considered a failure.
+
+All the test results and observations can be seen on \autoref{tab:res:summary}.
+Overall, the testing conducted a state exploration through the given model. It used both quick random
+\footnote{\url{https://github.com/GraphWalker/graphwalker-project/wiki/Generators-and-stop-conditions\#quick_random-some-stop-conditions-}}
+and random path generation.
+
+\begin{table}
+    \centering
+    \begin{tabular}{ l c c }
+        \toprule
+        Type           & Defect                                        & Blocker \\
+        \midrule
+        Functional     & BLE drops on thread reset                     & True    \\
+        Non-functional & Zigbee join fails occasionally while BLE scan & False   \\
+        Non-functional & Zigbee throughput success drops on BLE scan   & False   \\
+        Non-functional & Thread ping packet loss increases on BLE scan & False   \\
+        \bottomrule
+    \end{tabular}
+    \caption{Test results summary}
+    \label{tab:res:summary}
+\end{table}

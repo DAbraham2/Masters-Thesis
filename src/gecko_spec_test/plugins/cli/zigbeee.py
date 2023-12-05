@@ -179,9 +179,11 @@ def send_data_to_remote(
     _ = transport.send_and_expect(
         f'plugin throughput set-all 0x{remote_node_id.hex()} {packet_num} {interval} {packet_size} {simultaneous_packets} {aps} {timeout}',
         'PARAMETERS',
-        timeout=60
+        timeout=60,
     )
 
-    result = transport.send_and_expect('plugin throughput start', 'Success messages:', timeout=60)
+    result = transport.send_and_expect(
+        'plugin throughput start', 'Success messages:', timeout=60
+    )
 
     return get_tp_counters(result)
