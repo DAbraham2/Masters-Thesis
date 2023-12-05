@@ -266,7 +266,7 @@ class ZigBle:
                 if self.ble.expect_drop(helper_connection, timeout=0.4) is False:
                     self.logger.info('conn opened')
                     break
-            except :
+            except:
                 self.logger.warning('conn open issue..')
                 continue
 
