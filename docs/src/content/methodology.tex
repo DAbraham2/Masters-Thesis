@@ -4,7 +4,7 @@
 \section{Overview}
 \label{sec:meth:ov}
 
-The problem defined in \autoref{chap:problem} is heavily behavior-driven. Model-based testing has excellent usage in describing behavior. With state machines, I could create a complete state space of the multiprotocol device.
+The problem defined in \autoref{chap:intro} is heavily behavior-driven. Model-based testing has excellent usage in describing behavior. With state machines, I could create a complete state space of the multiprotocol device.
 
 I chose graphwalker as my modeling tool. It has a limited toolset for creating directed graphs, but it is a mature open-source package that can be used for MBT. The software can handle shared states that can synchronize multiple models. At its core, graphwalker is implemented in Java and only supports Maven projects natively. 
 
@@ -12,7 +12,7 @@ Since one of the goals was to create a project that runs on Python, more than gr
 
 \autoref{sec:meth:sys_mod} details the modeling process and final artifacts created during the thesis work. The adaptor design is described in \autoref{sec:meth:ada}, and \autoref{sec:meth:ts} shows the entire test setup.
 
-All the code and models developed for this thesis are publicly available on GitHub\cite{mis_github}.
+All the code and models developed for this thesis are publicly available on GitHub\footnote{\url{https://github.com/DAbraham2/Masters-Thesis}}.
 
 
 \section{System modeling}
@@ -61,7 +61,7 @@ After creating the separate models, I could make the complete model for operatin
 
 An adaptor was needed to translate abstract test cases into concrete tests. Altwalker can create a template package from a given model. It has limitations regarding if a package already exists; it will fail to update the project. Creating models incrementally is beneficial. To solve this problem, I have created a simple utility that parses the package into a Python abstract syntax tree (AST). Then, the code will modify the AST to create missing methods. After the modifications, it will translate to Python syntax and save the file - leaving the old code intact.
 
-To create the scenario defined in \autoref{chap:problem}, I needed to communicate with four different devices. Of those four, three were SoC applications, and I could use Silicon Labs' pyBgApi solution for the BLE helper.
+To create the scenario defined in \autoref{chap:intro}, I needed to communicate with four different devices. Of those four, three were SoC applications, and I could use Silicon Labs' pyBgApi solution for the BLE helper.
 
 The software architecture is divided into four layers. The highest level is the abstract device represented with contents in the interface package. It contains all the necessary functions a BLE, a Zigbee, and a Thread device shall do. The application package contains the concrete implementations of the interfaces.
 
