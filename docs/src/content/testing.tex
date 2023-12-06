@@ -39,11 +39,12 @@ Medium tests cover two or more interacting features.
 Large tests represent real user scenarios and use real user data sources.
 
 \begin{table}
-    \begin{tabular}{|| c c c c ||}
+    \centering
+    \begin{tabular}{|c c c c|}
         \hline
-        & Small tests & Medium tests & Large tests\\
-        Time Goals & $\leq$ 100 ms & $\leq$ 1 sec & As quickly as possible \\
-        Time Limits & Kill target after 1 minute & Kill target after 5 minutes & Kill target after 1 hour \\
+                    & Small tests   & Medium tests & Large tests            \\
+        Time Goals  & $\leq$ 100 ms & $\leq$ 1 sec & As quickly as possible \\
+        Time Limits & 1 minute      & 5 minutes    & 1 hour                 \\
         \hline
     \end{tabular}
     \caption{Google's test levels. (Source: \cite{google:2012})}
@@ -57,16 +58,20 @@ Common types used in the industry are functional, non-functional, and regression
 
 Functional testing evaluates the functions that a system (or component) should perform. The main objective is to check the functional completeness and correctness of the system.
 
-In Non-functional testing, the goals are to test how well the system behaves. Commonly used software quality characteristics are defined by ISO/IEC 25010 standard. These characteristics are performance, compatibility, usability, reliability, security, maintainability, and portability. Non-functional tests may need specific test environments.
+In Non-functional testing, the goals are to test how well the system behaves. Commonly used software quality characteristics are defined by ISO/IEC 25010 standard\cite{iso_25010:2011}. These characteristics are performance, compatibility, usability, reliability, security, maintainability, and portability. Non-functional tests may need specific test environments.
 
 Regression testing confirms that changes in the codebase did not inject new defects into the functionality. According to ISTQB, performing an impact analysis is advisable to optimize the extent of the regression testing.
 
 \section{Model-based test generation}
 
-\section{Runtime verification}
+Model-based testing (MBT) can best be defined as using models during the testing process [cmbt:syllabus:2015]. Utting et al. [utting2012taxonomy] defined a complete taxonomy for MBT approaches. MBT has two distinct artifacts: a developed model and an adaptor component, which ties the model to the SUT. They defined that the approach has seven major activities: model creation, criteria definition, test case generation, creation of the adaptor component, and test execution on the SUT. Testers use MBT from unit up to system level testing, but it is used primarily for system and integration testing.
 
-\section{Bluetooth testing}
+Models can best describe the system's intended behavior under test or its environment. Several surveys show that there is only one preferred modeling approach [10.1145/1353673.1353681, mbt-survey:2016, mbt-survey:2019], but state machine representations are the most popular. Then, state models get transformed into a directed graph. Modeling can be used to abstract different aspects of the SUT (function, data, and communication abstraction)
 
-\section{Zigbee testing}
+From the models - based on set criteria - automated tools could generate abstract test cases. The criteria could be in different forms: structural, requirement, or other coverage. Deriving test cases is usually based on random generation or graph search algorithms. Generation could be considered online of offline. In online generation concrete execution starts at the same time as generation. On the other hand, the offline mode can create abstract tests before the adaptor implementation. After the necessary codes are developed, the execution engine could run the offline-generated tests.
 
-\section{Thread/Openthread testing}
+Execution engines create concrete test cases in conjunction with the adaptor component from the abstract test cases. The adaptor component wraps the SUT and handles the communication directly. It is used to control and monitor different aspects of the tested system. After the execution, the engine makes a verdict from the SUT responses and reports it back to the QA engineer.
+
+Graphwalker is a simple but powerful model-based testing tool. It can represent models as directed graphs. Model elements can be either vertexes or edges. Vertexes represent state or validation, and edges represent actions or transitions. The tool integrates a model editor ("studio") and a test execution component. The executor supports many different generation strategies and coverage criteria.
+
+\section{Protocol testing}

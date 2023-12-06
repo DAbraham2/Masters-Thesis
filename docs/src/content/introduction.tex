@@ -1,5 +1,6 @@
 %----------------------------------------------------------------------------
 \chapter{\bevezetes}
+\label{chap:intro}
 %----------------------------------------------------------------------------
 
 %A bevezető tartalmazza a diplomaterv-kiírás elemzését, történelmi előzményeit, a feladat indokoltságát (a motiváció leírását), az eddigi megoldásokat, és ennek tükrében a hallgató megoldásának összefoglalását.
@@ -7,7 +8,6 @@
 %A bevezető szokás szerint a diplomaterv felépítésével záródik, azaz annak rövid leírásával, hogy melyik fejezet mivel foglalkozik.
 
 \section{Problem definition}
-%IoT (\url{https://www.academia.edu/20619459/The_Internet_of_Things_IoT_An_Overview}, \url{https://www.academia.edu/43659334/Network_Protocols_Schemes_Mechanisms_for_Internet_of_Things_IoT_Features_and_Open_Challenges}, \url{https://www.academia.edu/49051619/EMERGING_WIRELESS_TECHNOLOGIES_IN_THE_INTERNET_OF_THINGS_A_COMPARATIVE_STUDY})
 
 With the rapid spread of internet-of-things (IoT) devices worldwide, finding defects in protocol implementations has become more critical. Trying to define test cases or suites that truly move all the inner workings of a device is a delicate balance of complexity and resources. More automated solutions are necessary to help QA engineers and testers focus on solving problems and exotic cases.
 
@@ -19,10 +19,21 @@ According to Makhashari et al. \cite{9402092}, over 80 percent of developers fac
 
 Previously, some studies discussed testing in the IoT realm. From functional testing\cite{10.1145/3528227.3528568, 10.1145/3611643.3613888} through pattern-based techniques\cite{10.1145/3278186.3278196} to AI guided techniques\cite{10.1145/3387940.3392218, 10.1145/3539637.3558049}. One of the studies discusses model-based techniques used in IoT testing\cite{10.1145/3425329.3425330}. There are two notable mentions of test ware setup in the literature \cite{10.1145/3479239.3485708, 10.1145/3368235.3368832}.
 
+Most vendors' flagship chips can handle two or more protocols simultaneously. For this problem definition, I want to create a solution for testing a triple protocol setup that can run BLE, Thread, and Zigbee side-by-side.
 
-\section{Practical considerations}
+Testing should cover all network-level relations but does not have to validate full conformance. The tested application has the capability of a BLE peripheral device, a Minimal Thread Device, and a Zigbee End Device.
 
-With the rapid spread of IoT devices worldwide, finding defects in protocol implementations has become more critical. Trying to define test cases or suites that truly move all the inner workings of a device is a delicate balance of complexity and resources. More automated solutions are necessary to help QA engineers and testers focus on solving problems and exotic cases.
+The foundation of this idea is that many IoT devices on the market can be configured or initially set via Bluetooth by the user and then work on a different network. Smart lightbulbs are great examples for this use case as they have a constant power supply. Both Bluetooth and Zigbee have defined a light control profile, but there are quite a few Thread-compatible smart lights and controllers.
+
+The tested application would be able to act as a lightbulb on every network that it supports and does not require the user to dedicate him-/herself to invest in another network. The users can use whatever existing environment they have.
+
+The solution should only depend on open-source solutions, as investing in tooling was not an option. Also, since Python is emerging as a future-proof and popular language, I chose it to be the language of the main codebase.
+
+For the implementation of this study, Silicon Labs provided me with some wireless hardware\cite{silabs_wpk:2023}. I was given four of their EFR32xG24 Pro kits. It consists of a radio board - where the MCU is located - and a wireless Pro mainboard that can communicate with the radio board.
+
+The mainboard can connect to the outside world via USB or a network connection via ethernet. A user can attach a remote shell via telnet if the board connects to a network. One can pass commands to the radio board on the remote prompt if the application has integrated CLI features.
+
+Furthermore, Silicon Labs provided the necessary applications to run the scenario. The Silicon Labs' Gecko Software Development Kit (GSDK) is their integrated software solution. It is open-source and published on Git Hub\cite{silabs_gsdk:2023}. I was given a slightly modified version of the company's sample applications. All the SoC applications have a CLI interface compiled into the binary.
 
 \section{Thesis Outline}
 
@@ -30,6 +41,9 @@ This thesis has two parts: a literature review and a contribution. The literatur
 
 In \autoref{chap:wireless}, Wireless protocols will be shown.
 \autoref{chap:multiprot} will introduce the concept of multiprotocol networking, and \autoref{chap:testing} will introduce some software and system testing techniques.
+
+My contributions will be described in \autoref{chap:methodology}. After the methodology, \autoref{chap:results} summarizes the results evaluated from testing. Lastly, \autoref{chap:conclusion} summarises the thesis work and provides some future work.
+
 
 
 \section{Contributions}
