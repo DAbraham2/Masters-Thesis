@@ -24,29 +24,38 @@ The Bluetooth Core specifies what a peripheral device shall be capable of. GAP d
     \{standby, scan, advertise, connected\}  
 \] can describe the BLE device's state space. Since I am not testing the functionality of the profile - only the network capabilities - using any GATT services were not required.
 
-<<figure ble>>
+\begin{figure}
+    \includegraphics[width=100mm, keepaspectratio]{figures/model_ble_final.png}
+    \caption{Complete BLE model}
+\end{figure}
 
-As 802.15.4 defines the whole association procedure, the Zigbee states should be \[
+As 802.15.4 defines the whole association procedure, the Zigbee states should be: \[
     \{disconnected, scan, association, joined\}
-\]. Luckily, the application I was given had some plugins prepared for networking. The network-steering plugin automatically made the association process and gave its results. It tested the scanning, beaconing, and association procedures all in one. The final set of spaces is then reduced to just \[
+\] Luckily, the application I was given had some plugins prepared for networking. The network-steering plugin automatically made the association process and gave its results. It tested the scanning, beaconing, and association procedures all in one. The final set of spaces is then reduced to just: \[
     {disconnected, connected}
-\]. Another plugin- throughput- was used to test the network's ability to relay data. The complete graph of Zigbee can be found in the following.
+\] Another plugin- throughput- was used to test the network's ability to relay data. The complete graph of Zigbee can be found in the following.
 
-<<figure zigbee>>
+\begin{figure}
+    \includegraphics[width=100mm, keepaspectratio]{figures/model_zigbee_final.png}
+    \caption{Complete Zigbee model}
+\end{figure}
 
 For Thread, just as in Zigbee, the joining procedure is abstracted away.
-The complete state space of a device is \[
+The complete state space of a device is: \[
     \{disabled, detached, child, router, leader\}  
-\]. One of the limitations is that the application cannot stop the thread network; it just resets the stack. Since I am just creating a single-node network, having the router state is not relevant for this type of testing. With those two statements, the Thread state space is \[
+\] One of the limitations is that the application cannot stop the thread network; it just resets the stack. Since I am just creating a single-node network, having the router state is not relevant for this type of testing. With those two statements, the Thread state space is: \[
     \{disabled, child\}  
-\]. ICMP ping was used in the child state to test the connection.
+\] ICMP ping was used in the child state to test the connection.
 
-<<figure thread>>
+\begin{figure}
+    \includegraphics[width=100mm, keepaspectratio]{figures/model_thread_finished.png}
+    \caption{Complete Thread model}
+\end{figure}
 
 After creating the separate models, I could make the complete model for operating the three protocols side by side. Since graphwalker does not support regions or concurrently running multiple models, I combined the three models into one. The graph's vertexes could be described as \[
     \{standby, scan, advertise, peripheral\} \times  \{disconnected, joined\} \times \{disabled, child\}  
 \]
-\autoref{fig:meth_combined_model} shows the visual representation of the combined model.
+\autoref{fig:meth_combined_model} shows the visual representation of the combined model. The final model consists of 18 vertexes and 98 edges.
 
 \begin{figure}
     \centering
