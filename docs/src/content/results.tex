@@ -10,15 +10,18 @@ For the first attempts, a default formed from the execution of the model. After 
 This behavior is not desirable because if there is an ongoing operation on the BLE side when the reset comes, it could cause other malfunctions at the application level.
 
 
-During the literature review phase of the thesis, I noticed that Nordic - another manufacturer - published a limiting factor for multiprotocol scenarios \footnote{\url{https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/protocols/multiprotocol/index.html}}. During BLE scanning, the 15.4 stack could expect packet drops. Considering this, I prepared the adaptor code to be flexible on Zigbee and Thread operations. Having a rigid code would cause false negative test results.
+During the literature review phase of the thesis, I noticed that Nordic - another manufacturer - published a limiting factor for multiprotocol scenarios \footnote{\url{https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/protocols/multiprotocol/index.html}}.
+During BLE scanning, the 15.4 stack could expect packet drops.
+Considering this, I prepared the adaptor code to be flexible on Zigbee and Thread operations. Having a rigid code would cause false negative test results.
 
 
-After modifying the test suite, I noticed a significant success rate drop on Zigbee joins while the BLE stack was scanning. The successes dropped to roughly 70 percent. Anything less than 50 percent would be considered a failure.
+After modifying the test suite, I noticed a significant success rate drop on Zigbee joins while the BLE stack was scanning.
+The successes dropped to roughly 70 percent.
+Anything less than 50 percent would be considered a failure.
 
 All the test results and observations can be seen on \autoref{tab:res:summary}.
-Overall, the testing conducted a state exploration through the given model. It used both quick random
-\footnote{\url{https://github.com/GraphWalker/graphwalker-project/wiki/Generators-and-stop-conditions\#quick_random-some-stop-conditions-}}
-and random path generation.
+Overall, the testing conducted a state exploration through the given model.
+It used both quick random\footnote{\url{https://github.com/GraphWalker/graphwalker-project/wiki/Generators-and-stop-conditions\#quick_random-some-stop-conditions-}} and random path generation.
 
 \begin{table}
     \centering
@@ -34,4 +37,20 @@ and random path generation.
     \end{tabular}
     \caption{Test results summary}
     \label{tab:res:summary}
+\end{table}
+
+In conclusion, I have managed to find new bugs and performance degradations in the given application, achieving ~60 percent vertex coverage. The edge coverage stayed below 30 percent during testing due to execution failure on defects in the SUT. \autoref{tab:res:cov} summarizes coverage data.
+
+\begin{table}
+    \centering
+    \caption{Model coverage summary}
+    \begin{tabular}{l c c c}
+        \toprule
+               & visited & missed & coverage \\
+        \midrule
+        Vertex & 10      & 8      & 55\%     \\
+        Edge   & 21      & 77     & 21\%\\
+        \bottomrule
+    \end{tabular}
+    \label{tab:res:cov}
 \end{table}

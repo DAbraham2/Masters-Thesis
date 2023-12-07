@@ -412,24 +412,6 @@
   year         = {2019}
 }
 
-@inproceedings{Morgner:2017,
-  author    = {Morgner, Philipp and Mattejat, Stephan and Benenson, Zinaida and M\"{u}ller, Christian and Armknecht, Frederik},
-  title     = {Insecure to the Touch: Attacking ZigBee 3.0 via Touchlink Commissioning},
-  year      = {2017},
-  isbn      = {9781450350846},
-  publisher = {Association for Computing Machinery},
-  address   = {New York, NY, USA},
-  url       = {https://doi.org/10.1145/3098243.3098254},
-  doi       = {10.1145/3098243.3098254},
-  abstract  = {Hundred millions of Internet of Things devices implement ZigBee, a low-power mesh network standard, and the number is expected to be growing. To facilitate an easy integration of new devices into a ZigBee network, touchlink commissioning was developed. It was adopted in the latest specifications, ZigBee 3.0, which were released to the public in December 2016, as one of two commissioning options for ZigBee devices. ZigBee 3.0 products can be used in various applications, also including security-critical products such as door locks and intruder alarm systems. The aim of this work is to warn about a further adoption of this commissioning mode. We analyze the security of touchlink commissioning procedure and present novel attacks that make direct use of standard's features, showing that this commissioning procedure is insecure by design. We release an open-source penetration testing framework to evaluate the practical implications of these vulnerabilities. Evaluating our tools on popular ZigBee-certified products, we demonstrate that a passive eavesdropper can extract key material from a distance of 130 meters. Furthermore, an active attacker is able to take-over devices from distances of 190 meters. Our analysis concludes that even a single touchlink-enabled device is sufficient to compromise the security of a ZigBee 3.0 network, and therefore, touchlink commissioning should not be supported in any future ZigBee products.},
-  booktitle = {Proceedings of the 10th ACM Conference on Security and Privacy in Wireless and Mobile Networks},
-  pages     = {230–240},
-  numpages  = {11},
-  keywords  = {commissioning, internet of things, IoT, security, ZigBee, touchlink},
-  location  = {Boston, Massachusetts},
-  series    = {WiSec '17}
-}
-
 @techreport{thread:130,
   author = {Thread Group},
   title  = {Thread 1.3.0 Public Specification},
@@ -700,4 +682,204 @@
   number  = {},
   pages   = {9483-9505},
   doi     = {10.1109/ACCESS.2022.3142848}
+}
+
+@inproceedings{10.1145/3576915.3623066,
+  author    = {Antonioli, Daniele},
+  title     = {BLUFFS: Bluetooth Forward and Future Secrecy Attacks and Defenses},
+  year      = {2023},
+  isbn      = {9798400700507},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/3576915.3623066},
+  doi       = {10.1145/3576915.3623066},
+  abstract  = {Bluetooth is a pervasive technology for wireless communication. Billions of devices use it in sensitive applications and to exchange private data. The security of Bluetooth depends on the Bluetooth standard and its two security mechanisms: pairing and session establishment. No prior work, including the standard itself, analyzed the future and forward secrecy guarantees of these mechanisms, e.g., if Bluetooth pairing and session establishment defend past and future sessions when the adversary compromises the current. To address this gap, we present six novel attacks, defined as the BLUFFS attacks, breaking Bluetooth sessions' forward and future secrecy. Our attacks enable device impersonation and machine-in-the-middle across sessions by only compromising one session key. The attacks exploit two novel vulnerabilities that we uncover in the Bluetooth standard related to unilateral and repeatable session key derivation. As the attacks affect Bluetooth at the architectural level, they are effective regardless of the victim's hardware and software details (e.g., chip, stack, version, and security mode).We also release BLUFFS, a low-cost toolkit to perform and automatically check the effectiveness of our attacks. The toolkit employs seven original patches to manipulate and monitor Bluetooth session key derivation by dynamically patching a closed-source Bluetooth firmware that we reverse-engineered. We show that our attacks have a critical and large-scale impact on the Bluetooth ecosystem, by evaluating them on seventeen diverse Bluetooth chips (eighteen devices) from popular hardware and software vendors and supporting the most popular Bluetooth versions. Motivated by our empirical findings, we develop and successfully test an enhanced key derivation function for Bluetooth that stops by-design our six attacks and their four root causes. We show how to effectively integrate our fix into the Bluetooth standard and discuss alternative implementation-level mitigations. We responsibly disclosed our contributions to the Bluetooth SIG.},
+  booktitle = {Proceedings of the 2023 ACM SIGSAC Conference on Computer and Communications Security},
+  pages     = {636–650},
+  numpages  = {15},
+  keywords  = {bluetooth, forward secrecy, future secrecy, defenses, attacks},
+  location  = {<conf-loc>, <city>Copenhagen</city>, <country>Denmark</country>, </conf-loc>},
+  series    = {CCS '23}
+}
+
+@inproceedings{10.1145/3448300.3468287,
+  author    = {Peters, Travis and Pierson, Timothy J. and Sen, Sougata and Camacho, Jos\'{e} and Kotz, David},
+  title     = {Recurring Verification of Interaction Authenticity within Bluetooth Networks},
+  year      = {2021},
+  isbn      = {9781450383493},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/3448300.3468287},
+  doi       = {10.1145/3448300.3468287},
+  abstract  = {Although user authentication has been well explored, device-to-device authentication - specifically in Bluetooth networks - has not seen the same attention. We propose Verification of Interaction Authenticity (VIA) - a recurring authentication scheme based on evaluating characteristics of the communications (interactions) between devices. We adapt techniques from wireless traffic analysis and intrusion-detection systems to develop behavioral models that capture typical, authentic device interactions (behavior); these models enable recurring verification of device behavior. To evaluate our approach we produced a new dataset consisting of more than 300 Bluetooth network traces collected from 20 Bluetooth-enabled smart-health and smart-home devices. In our evaluation, we found that devices can be correctly verified at a variety of granularities, achieving an F1-score of 0.86 or better in most cases.},
+  booktitle = {Proceedings of the 14th ACM Conference on Security and Privacy in Wireless and Mobile Networks},
+  pages     = {192–203},
+  numpages  = {12},
+  keywords  = {bluetooth, traffic analysis, verification, behavioral analysis},
+  location  = {Abu Dhabi, United Arab Emirates},
+  series    = {WiSec '21}
+}
+
+@inproceedings{10.1145/3448300.3468296,
+  author    = {Ren, Mengfei and Ren, Xiaolei and Feng, Huadong and Ming, Jiang and Lei, Yu},
+  title     = {Z-Fuzzer: Device-Agnostic Fuzzing of Zigbee Protocol Implementation},
+  year      = {2021},
+  isbn      = {9781450383493},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/3448300.3468296},
+  doi       = {10.1145/3448300.3468296},
+  abstract  = {With the proliferation of the Internet of Things (IoT) devices, Zigbee is widely adopted as a resource-efficient wireless protocol. Recently, severe vulnerabilities in Zigbee protocol implementations have compromised IoT devices from different manufacturers. It becomes imperative to perform security testing on Zigbee protocol implementations. However, it is not a trivial task to apply the existing vulnerability detection techniques such as fuzzing to Zigbee protocol implementations. In particular, it remains a significant obstacle to deal with low-level hardware events. Many existing protocol fuzzing tools lack a proper execution environment for the Zigbee protocol, which communicates via a radio channel instead of the Internet.To bridge the above gap, we develop a device-agnostic fuzzing platform named Z-Fuzzer to detect security vulnerabilities in Zigbee protocol implementations. Z-Fuzzer provides a software simulation environment with pre-defined peripherals and hardware interrupts configurations to simulate Zigbee protocol execution on real IoT devices. We first extend the existing protocol fuzzing framework's capabilities with a proxy server to bridge communication with the Zigbee protocol execution. Second, we generate more high-quality test cases with code-coverage heuristics. We compare Z-Fuzzer with advanced protocol fuzzing tools, BooFuzz and Peach fuzzer, on top of Z-Fuzzer's simulation platform. Our results show that Z-Fuzzer can achieve higher code coverage in a mainstream Zigbee protocol implementation called Z-Stack. Z-Fuzzer has detected more vulnerabilities using fewer test cases than BooFuzz and Peach. Three of them have been assigned CVE IDs with high CVSS scores (7.5~8.2).},
+  booktitle = {Proceedings of the 14th ACM Conference on Security and Privacy in Wireless and Mobile Networks},
+  pages     = {347–358},
+  numpages  = {12},
+  keywords  = {Zigbee protocol, IoT network, fuzzing},
+  location  = {Abu Dhabi, United Arab Emirates},
+  series    = {WiSec '21}
+}
+
+@inproceedings{10.1145/3548606.3560703,
+  author    = {Wang, Xian and Hao, Shuang},
+  title     = {Don't Kick Over the Beehive: Attacks and Security Analysis on Zigbee},
+  year      = {2022},
+  isbn      = {9781450394505},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/3548606.3560703},
+  doi       = {10.1145/3548606.3560703},
+  abstract  = {The blooming of the Internet of Things (IoT) has led to the demand for new connectivity technologies. Zigbee, with its low-power consumption and flexible network structure, has become one of the essential wireless communication protocols in the IoT ecosystem and is adopted by many major companies. There have been over thousands of certified Zigbee products, ranging from sensors, to link light products, to smart energy devices. A common belief is that Zigbee is comparatively secure, due to the nature of closed networks and the use of encryption.  However, in this paper, we find Zigbee-related attacks in which adversaries are outside of the target network and have no knowledge of the encryption keys. The low attack requirements pose high threats. The attacks mislead devices to accept forged packets, which will jeopardize the normal operations of Zigbee networks. We further develop a framework to efficiently identify such problems. The framework supports flexible modification of address and network information, and bit-level manipulations from the MAC layer. To accelerate analysis, we design semantic-aware fuzzing to generate packet candidates that are more likely to produce meaningful results.  We conduct experiments on 10 real-world Zigbee systems. Using our approach, we have identified five types of practical attacks, ranging from communication disruption to security key leakage. We show proof-of-concept attacks on industry Zigbee products and systems. Our findings bring to light new security issues of Zigbee and further motivate possible mitigation approaches.},
+  booktitle = {Proceedings of the 2022 ACM SIGSAC Conference on Computer and Communications Security},
+  pages     = {2857–2870},
+  numpages  = {14},
+  keywords  = {semantic-aware fuzzing, security, zigbee},
+  location  = {Los Angeles, CA, USA},
+  series    = {CCS '22}
+}
+
+@inproceedings{10.1145/3098243.3098254,
+  author    = {Morgner, Philipp and Mattejat, Stephan and Benenson, Zinaida and M\"{u}ller, Christian and Armknecht, Frederik},
+  title     = {Insecure to the Touch: Attacking ZigBee 3.0 via Touchlink Commissioning},
+  year      = {2017},
+  isbn      = {9781450350846},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/3098243.3098254},
+  doi       = {10.1145/3098243.3098254},
+  abstract  = {Hundred millions of Internet of Things devices implement ZigBee, a low-power mesh network standard, and the number is expected to be growing. To facilitate an easy integration of new devices into a ZigBee network, touchlink commissioning was developed. It was adopted in the latest specifications, ZigBee 3.0, which were released to the public in December 2016, as one of two commissioning options for ZigBee devices. ZigBee 3.0 products can be used in various applications, also including security-critical products such as door locks and intruder alarm systems. The aim of this work is to warn about a further adoption of this commissioning mode. We analyze the security of touchlink commissioning procedure and present novel attacks that make direct use of standard's features, showing that this commissioning procedure is insecure by design. We release an open-source penetration testing framework to evaluate the practical implications of these vulnerabilities. Evaluating our tools on popular ZigBee-certified products, we demonstrate that a passive eavesdropper can extract key material from a distance of 130 meters. Furthermore, an active attacker is able to take-over devices from distances of 190 meters. Our analysis concludes that even a single touchlink-enabled device is sufficient to compromise the security of a ZigBee 3.0 network, and therefore, touchlink commissioning should not be supported in any future ZigBee products.},
+  booktitle = {Proceedings of the 10th ACM Conference on Security and Privacy in Wireless and Mobile Networks},
+  pages     = {230–240},
+  numpages  = {11},
+  keywords  = {ZigBee, security, touchlink, commissioning, IoT, internet of things},
+  location  = {Boston, Massachusetts},
+  series    = {WiSec '17}
+}
+
+@inproceedings{10.1145/3597926.3598144,
+  author    = {Ounjai, Jiradet and W\"{u}stholz, Valentin and Christakis, Maria},
+  title     = {Green Fuzzer Benchmarking},
+  year      = {2023},
+  isbn      = {9798400702211},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/3597926.3598144},
+  doi       = {10.1145/3597926.3598144},
+  abstract  = {Over the last decade, fuzzing has been increasingly gaining  
+               traction due to its effectiveness in finding  
+               bugs. Nevertheless, fuzzer evaluations have been challenging  
+               during this time, mainly due to lack of standardized  
+               benchmarking. Aiming to alleviate this issue, in 2020, Google  
+               released FuzzBench, an open-source benchmarking platform, that  
+               is widely used for accurate fuzzer benchmarking.  
+               
+               However, a typical FuzzBench experiment takes CPU years to  
+               run. If we additionally consider that fuzzers under active  
+               development evaluate any changes empirically, benchmarking  
+               becomes prohibitive both in terms of computational resources  
+               and time. In this paper, we propose GreenBench, a greener  
+               benchmarking platform that, compared to FuzzBench,  
+               significantly speeds up fuzzer evaluations while maintaining  
+               very high accuracy.  
+               
+               In contrast to FuzzBench, GreenBench drastically increases the  
+               number of benchmarks while drastically decreasing the duration  
+               of fuzzing campaigns. As a result, the fuzzer rankings  
+               generated by GreenBench are almost as accurate as those by  
+               FuzzBench (with very high correlation), but GreenBench is from  
+               18 to 61 times faster. We discuss the implications of these  
+               findings for the fuzzing community.},
+  booktitle = {Proceedings of the 32nd ACM SIGSOFT International Symposium on Software Testing and Analysis},
+  pages     = {1396–1406},
+  numpages  = {11},
+  keywords  = {testing, fuzzing, benchmarking},
+  location  = {<conf-loc>, <city>Seattle</city>, <state>WA</state>, <country>USA</country>, </conf-loc>},
+  series    = {ISSTA 2023}
+}
+
+@inproceedings{10.1145/3507657.3528544,
+  author    = {Akestoridis, Dimitrios-Georgios and Sekar, Vyas and Tague, Patrick},
+  title     = {On the Security of Thread Networks: Experimentation with OpenThread-Enabled Devices},
+  year      = {2022},
+  isbn      = {9781450392167},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/3507657.3528544},
+  doi       = {10.1145/3507657.3528544},
+  abstract  = {The Thread networking protocol is expected to be utilized by a plethora of smart home devices as one of the IP-based networking technologies that will be supported by the Matter standard that is being developed by members of the Connectivity Standards Alliance. Thread has been developed by the Thread Group as an application-agnostic protocol that builds on top of the IEEE 802.15.4 standard to enable IPv6-based low-power wireless mesh networking. However, unlike other IEEE 802.15.4-based protocols like Zigbee, the security of Thread networks has been relatively less analyzed in the literature. Given that commercial Thread devices are expected to interact with the physical world, vulnerabilities in their communication protocols could impact the physical security of end users. In this work we analyze the security of Thread networks by repurposing hardware and software tools that have been used for the security analysis of Zigbee networks. We used development boards that were flashed with OpenThread binaries to gain insight into the nature of Thread traffic and to study their susceptibility to a set of energy depletion attacks and online password guessing attacks. Lastly, we are publicly releasing our software enhancements as well as our dataset of captured Thread packets.},
+  booktitle = {Proceedings of the 15th ACM Conference on Security and Privacy in Wireless and Mobile Networks},
+  pages     = {233–244},
+  numpages  = {12},
+  keywords  = {online password guessing attacks, openthread, ieee 802.15.4, thread, energy depletion attacks},
+  location  = {San Antonio, TX, USA},
+  series    = {WiSec '22}
+}
+
+@inproceedings{1440979,
+  author    = {Werner-Allen, G. and Swieskowski, P. and Welsh, M.},
+  booktitle = {IPSN 2005. Fourth International Symposium on Information Processing in Sensor Networks, 2005.},
+  title     = {MoteLab: a wireless sensor network testbed},
+  year      = {2005},
+  volume    = {},
+  number    = {},
+  pages     = {483-488},
+  doi       = {10.1109/IPSN.2005.1440979}
+}
+
+@article{6069710,
+  author  = {Gluhak, Alexander and Krco, Srdjan and Nati, Michele and Pfisterer, Dennis and Mitton, Nathalie and Razafindralambo, Tahiry},
+  journal = {IEEE Communications Magazine},
+  title   = {A survey on facilities for experimental internet of things research},
+  year    = {2011},
+  volume  = {49},
+  number  = {11},
+  pages   = {58-67},
+  doi     = {10.1109/MCOM.2011.6069710}
+}
+
+@article{10.3991/ijim.v14i09.13431,
+  author  = {Ismail, Teeba and Hamarash, Ibrahim},
+  year    = {2020},
+  month   = {06},
+  pages   = {128},
+  title   = {{Model-Based Quality Assessment of Internet of Things Software Applications: A Systematic Mapping Study}},
+  volume  = {14},
+  journal = {International Journal of Interactive Mobile Technologies (iJIM)},
+  doi     = {10.3991/ijim.v14i09.13431}
+}
+
+@inproceedings{10.1145/3624032.3624049,
+  author    = {Ferreira, Vin\'{\i}cius Gomes and Herrera, Caio Guimar\~{a}es and Souza, Simone and Santos, Ricardo Ribeiro dos and Souza, Paulo S\'{e}rgio Lopes de},
+  title     = {Software Testing Applied to the Development of IoT Systems: Preliminary Results},
+  year      = {2023},
+  isbn      = {9798400716294},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/3624032.3624049},
+  doi       = {10.1145/3624032.3624049},
+  abstract  = {Software testing is a fundamental activity of the broader software engineering process. Internet of Things (IoT) testing activities present unique characteristics that make their execution different from conventional software testing, including specific challenges, tools, approaches, and processes. Although the literature contains several secondary studies that summarize the contributions on this topic, there still needs to be more organization of these studies along a software development process. This paper reports preliminary literature results showing how the knowledge about software testing has been applied to developing and using IoT systems. We conducted an initial search on known papers’ databases in computing and supplemented this search by snowballing two literature reviews found in this previous search. This study’s main results show that most approaches and tools for software testing on IoT systems are grouped in the stages of Validation by Emulation or Simulation with approximately 43\% of the total of papers, followed by Validation by Testbed with approximately 24\%. Hence, there is an opportunity for exploring further the Development and Operation/Support stages. Our results will help researchers and practitioners know when and in what sequence to use techniques, processes, and test tools reported in the literature.},
+  booktitle = {Proceedings of the 8th Brazilian Symposium on Systematic and Automated Software Testing},
+  pages     = {113–122},
+  numpages  = {10},
+  keywords  = {systematic mapping, internet of things, software development life cycle, testing},
+  location  = {<conf-loc>, <city>Campo Grande, MS</city>, <country>Brazil</country>, </conf-loc>},
+  series    = {SAST '23}
 }
