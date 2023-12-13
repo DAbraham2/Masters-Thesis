@@ -1,4 +1,4 @@
-\chapter{Wireless protocols}
+\section{Wireless protocols}
 \label{chap:wireless}
 
 In this chapter, I will describe and introduce some of the overwelming amount of protocols used in IoT.
@@ -6,7 +6,7 @@ I will demonstrate each wireless protocol starting with Bluetooth Low Energy in 
 Zigbee in \autoref{sec:zig}, and finally Thread/OpenThread in \autoref{sec:ot}.
 \autoref{sec:15_4} will provide an overview of the IEEE 802.15.4 radio specification, of which both Zigbee and Thread is based on.
 
-\section{Bluetooth Low Energy}
+\subsection{Bluetooth Low Energy}
 \label{sec:ble}
 
 Bluetooth is a low-power, short-range wireless technology developed initially for replacing cables when connecting devices like mobile phones, headsets, and computers. It has since evolved into a wireless standard for connecting electronic devices to form Personal Area Networks (PANs) and ad hoc networks. \cite{Dideles03}
@@ -29,7 +29,7 @@ the Bluetooth standard and has a membership of over 38,000 companies as of 2023.
 The initial specification was made available in 1999.
 Since then, the SIG released five core specifications, 5.4 being the latest adoption in 2023. \cite{bt_spec_history}
 
-\subsection{Introcution}
+\subsubsection{Introcution}
 \label{ble:int}
 The Bluetooth 4.0 Core Specification introduced Bluetooth Low Energy (BLE).
 It is tempting to represent itself as a smaller and highly optimized version of
@@ -44,7 +44,7 @@ The physical layer uses a 2 MHz bandwidth.
 From Core Specification 5, BLE has a theoretical maximum throughput of 2 Mbps and
 a maximum output power of 100 mW (20 dBm).
 
-\subsection{Architecture}
+\subsubsection{Architecture}
 \label{ble:ow}
 
 According to Townsend et al., the Bluetooth Low Energy device can be categorized into
@@ -75,12 +75,10 @@ In BLE, Generic Access Profile (GAP) defines specific roles for each device.
 These roles are: broadcaster, observer, peripheral, and central.
 A device may support multiple roles but only one at a given time.
 Each role specifies the requirements for the underlying Controller.
-\autoref{ble:host:gap} explains GAP in more detail.
+\autoref{ble:host} explains GAP in more detail.
 
-\subsection{LE Controller}
+\subsubsection{LE Controller}
 \label{ble:controller}
-\subsubsection{Physical layer}
-\label{ble:controller:phy}
 
 The physical layer (PHY) contains all necessary analog communication circuitry.
 The radio uses the 2.4 GHz ISM band to communicate.
@@ -105,8 +103,6 @@ modulation scheme was introduced in the standard.
 This feature allowed radio modules to use up all 2 MHz of bandwidth,
 thus significantly increasing the maximum throughput.
 
-\subsubsection{Link layer}
-\label{ble:controller:link}
 Part B of the Core Specification's volume six (Low Energy Controller volume)
 defines the Bluetooth Low Energy Link Layer's specification.
 
@@ -184,7 +180,7 @@ The specification differentiates two different formats; uncoded and coded packet
 Higher-level protocols are transmitted in the PDU field.
 As \autoref{fig:ble:aip_formats} shows, the largest data transmitted in a single packet is limited to 258 bytes.
 
-\subsection{Host Controller Interface}
+\subsubsection{Host Controller Interface}
 \label{ble:hci}
 The Host Controller Interface (HCI) connects the Controller (low-level) and Host (high-level) parts of the BLE stack.
 It contains a technology-independent logical command interface structure (HCI driver) and a Host Controller Transport Layer.
@@ -214,10 +210,8 @@ If the Controller cannot execute the command immediately, it shall notify the Ho
 
 \autoref{fig:ble:hci_command_msg} and \autoref{fig:ble:hci_event_msg} show the data formats used in HCI communication.
 
-\subsection{Host}
+\subsubsection{Host}
 \label{ble:host}
-\subsubsection{Logical Link Control and Adaption Protocol}
-\label{ble:host:l2cap}
 The Bluetooth logical link control and adaptation protocol (L2CAP)
 supports higher-level protocol multiplexing, packet segmentation and
 reassembly, and the conveying of quality of service information.
@@ -232,21 +226,14 @@ and the conveying of quality of service information.
 The protocol state machine, packet format, and composition are described
 in this document. \cite{Townsend14}
 
-\subsubsection{Attribute Protocol}
-\label{ble:host:att}
 The Attribute Protocol (ATT) defines the peer-to-peer communication scheme. It defines client and server roles during communication. The ATT client communicates to an ATT server on a remote device. This communication uses a dedicated fixed L2CAP channel created by the initial connection.
 
 The client can send commands, requests, and confirmations to a server. On the reversed path, the server can only send responses, notifications, and indications back to a client, meaning that a client can read and write the values of attributes on a device with an ATT server.
-
-\subsubsection{Generic Access Profile}
-\label{ble:host:gap}
 
 The Generic Access Profile (GAP) defines common functionalities all Bluetooth devices use.
 These functionalities, such as modes and access procedures, are used by transports, protocols, and application profiles.
 The GAP includes device discovery, connection modes, security, authentication, association models, and service discovery.
 
-\subsubsection{Generic Attribute Profile}
-\label{ble:host:gatt}
 The Generic Attribute Profile (GATT) builds on the Attribute Protocol (ATT) and adds a hierarchy and data abstraction model on top of it.
 It can be considered the backbone of BLE data transfer because it defines how data is organized and exchanged between applications.
 
@@ -254,7 +241,7 @@ The GATT also provides an interface for discovering, reading, writing, and indic
 
 The Bluetooth SIG specifies over 250 standard profiles that must be supported to facilitate interoperability between developers. \cite{gatt_sup}
 
-\section{IEEE 802.15.4}
+\subsection{IEEE 802.15.4}
 \label{sec:15_4}
 
 The IEEE 802.15.4 standard defines the physical layer (PHY) and medium access control (MAC)
@@ -267,9 +254,9 @@ It operates in the unlicensed Industrial, Scientific, and Medical (ISM) bands, s
 and Bluetooth devices, as well as the 868 MHz and 915 MHz bands.
 It supports a maximum data rate of 250 kbps.
 
-\subsection{Physical layer (PHY)}
+\subsubsection{Physical layer (PHY)}
 
-\subsection{Medium Access Control Layer (MAC)}
+\subsubsection{Medium Access Control Layer (MAC)}
 The MAC layer describes essential message handling and congestion control.
 This layer includes mechanisms for forming and joining a network, a CSMA-CA mechanism,
 and a link layer for retires and acknowledgment for reliable communication. (ug103-02)
@@ -282,10 +269,10 @@ The network coordinator initiates and manages the network, while devices can joi
 and communicate with the coordinator or other devices.
 
 
-\section{Zigbee}
+\subsection{Zigbee}
 \label{sec:zig}
 
-\subsection{Introduction}
+\subsubsection{Introduction}
 \label{zb:into}
 Zigbee is a wireless communication protocol specifically designed for
 applications requiring low-power consumption and short-range communication.
@@ -322,7 +309,7 @@ This thesis will be based on ZigBee Pro Revision 21. This version of the specifi
 ZigBee 3.0 contains a new document called Base Device Behavior Specification (BDB).
 It possesses mandatory and optional application layer behavior for any ZigBee product. \cite{ti:new:19}, \cite{10.1145/3098243.3098254}
 
-\subsection{Network}
+\subsubsection{Network}
 \label{zb:net:intro}
 
 A Zigbee network is made up of three different types of nodes: Coordinator, Router, and End Device. \cite{Whitehurst:14}
@@ -336,20 +323,18 @@ A Zigbee network can be configured to support different topologies: star, tree, 
     \label{zb:network:topologie}
 \end{figure}
 
-\subsection{Architecture}
+\subsubsection{Architecture}
 
 Zigbee builds on top of the IEEE 802.15.4 physical layer defined in Section 3. The Zigbee architecture defines two more layers: the network layer (NWK) and the application layer (APL).
 
-\subsection{Network layer}
+\subsubsection{Network layer}
 
 The NWK layer is responsible for mesh networking, which includes broadcasting packets across the network, determining routes for unicasting packets, and ensuring packets are sent reliably from one node to another. The network layer also has a set of commands for security purposes, including secure joining and rejoining. ZigBee networks are all secured at the NWK layer, and the entire payload of the NWK frame is encrypted
 
-\subsection{Application layer}
+\subsubsection{Application layer}
 
 The ZigBee application layer consists of the APS sublayer, the ZDO, and the deﬁned by manufacturer application objects. (Wang et al., 2016)
 \cite{nxp:2016}
-
-\subsubsection{Application Support Sub-layer}
 
 The application support sub-layer (APS) provides an interface between the NWK and the application layer through services for ZDO and application objects.
 
@@ -359,29 +344,25 @@ The APSDE is responsible for payload conversion, address filtering, reliability,
 
 The other service, the APSME, allows an application to interact with the stack. It is responsible for AIB, binding, security, and group management.
 
-
-\subsubsection{Application Framework}
-
 The application Framework provides a hosting environment for application objects on a Zigbee device.
 A developer can define up to 240 distinct application objects, each identified by an endpoint address from 1 to 240.
 
 Index 0 is reserved for communication with ZDO, and index 255 is considered the broadcast address.
 For future use, the alliance reserved the index range from 241 to 254.
 
-\subsubsection{Zigbee Device Object}
 Zigbee device object interfaces the application objects, the device profile, and the APS. For the application objects, it provides device control and network functions. Other functions are address management of the device, discovery, binding, and security. (Wang et al., 2016)
 
 The ZDO is responsible for initializing the APS sublayer, the NWK layer, and the Security Service Provider. Also, the ZDO defines the role of the device within a ZigBee network.
-\subsection{Cluster Library}
+\subsubsection{Cluster Library}
 
 %\url{https://www.academia.edu/73196763/A_Survey_of_ZigBee_Wireless_Sensor_Network_Technology_Topology_Applications_and_Challenges}
 %\url{https://issuu.com/ijtsrd.com/docs/399_literature_survey_on_zigbee_iee}
 %\url{https://www.sciencedirect.com/topics/engineering/zigbee-protocol}
 
-\section{Thread/OpenThread}
+\subsection{Thread/OpenThread}
 \label{sec:ot}
 
-\subsection{Introduction}
+\subsubsection{Introduction}
 \label{sec:ot:intro}
 Thread is intended to be an open standard, and the protocol is built by incorporating many
 current and proposed standards.\cite{unwala:2018}
@@ -394,7 +375,7 @@ More than 200 companies, such as Apple, Google, and Amazon, are forming the Thre
 
 This thesis uses the Thread specification, v1.3.0 2023.
 
-\subsection{Private Area Network}
+\subsubsection{Private Area Network}
 \label{sec:ot:pan}
 In a Thread network, there are two types of devices (nodes): Full Thread Device (FTD) and Minimal Thread Device (MTD). FTDs can communicate with each other and with their attached MTD children. MTDs can only communicate with the parent FTD.
 

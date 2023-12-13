@@ -1,6 +1,6 @@
-\chapter{Software testing}
+\section{Software testing}
 \label{chap:testing}
-\section{Overview}
+\subsection{Overview}
 A lot of different standard bodies and writers have defined software testing.
 The International Software Testing Qualifications Board (ISTQB) defines software testing
 as follows: "The process consisting of all lifecycle activities, both static and
@@ -19,7 +19,7 @@ Meanwhile, test-as-quality-accelerant follows a test-always strategy.
 In the latter approach, testers are quality assistants, and developers
 write tests alongside testers.
 This allows shorter and more fine-grade releases.
-\section{Testing levels}
+\subsection{Testing levels}
 
 According to ISTQB, test levels are groups of test activities that are organized
 and managed together.
@@ -50,7 +50,7 @@ Large tests represent real user scenarios and use real user data sources.
     \label{tab:test:levels:google}
 \end{table}
 
-\section{Test types}
+\subsection{Test types}
 Test types are groups of test activities related to specific quality characteristics, and most of those test activities can be performed at every test level. \cite{ctfl_syllabus:2023}
 
 Common types used in the industry are functional, non-functional, and regression testing.
@@ -61,7 +61,7 @@ In Non-functional testing, the goals are to test how well the system behaves. Co
 
 Regression testing confirms that changes in the codebase did not inject new defects into the functionality. According to ISTQB, performing an impact analysis is advisable to optimize the extent of the regression testing.
 
-\section{Model-based test generation}
+\subsection{Model-based test generation}
 
 Model-based testing (MBT) can best be defined as using models during the testing process \cite{cmbt:syllabus:2015}. Utting et al. \cite{utting2012taxonomy} defined a complete taxonomy for MBT approaches. MBT has two distinct artifacts: a developed model and an adaptor component, which ties the model to the SUT. They defined that the approach has seven major activities (see: \autoref{fig:mbt:taxonomy}):
 \begin{enumerate}
@@ -88,7 +88,7 @@ Execution engines create concrete test cases in conjunction with the adaptor com
 
 Graphwalker\footnote{\url{https://graphwalker.github.io/}} is a simple but powerful model-based testing tool. It can represent models as directed graphs. Model elements can be either vertexes or edges. Vertexes represent state or validation, and edges represent actions or transitions. The tool integrates a model editor ("studio") and a test execution component. The executor supports many different generation strategies and coverage criteria.
 
-\section{Protocol testing}
+\subsection{Protocol testing}
 Nowadays, academia focuses on proving security issues on protocols and radio. Current studies work on finding vulnerabilities in the protocol itself or its implementation \cite{10.1145/3576915.3623066, 10.1145/3448300.3468287, 10.1145/3448300.3468296, 10.1145/3548606.3560703, 10.1145/3098243.3098254, 10.1145/3597926.3598144, 10.1145/3507657.3528544}.
 
 In terms of IoT testing, a more scalable approach is needed. The literature mentions two types of approaches: simulation and testbeds. Simulation is used when no physical device is available. It is great for validating the functional aspects of a protocol.
