@@ -6,13 +6,30 @@
 
 The problem defined in \autoref{chap:intro} is heavily behavior-driven. Model-based testing has excellent usage in describing behavior. With state machines, I could create a complete state space of the multiprotocol device.
 
-I chose graphwalker as my modeling tool. It has a limited toolset for creating directed graphs, but it is a mature open-source package that can be used for MBT. The software can handle shared states that can synchronize multiple models. At its core, graphwalker is implemented in Java and only supports Maven projects natively. 
+I chose graphwalker as my modeling tool. It has a limited toolset for creating directed graphs, but it is a mature open-source package that can be used for MBT. The software can handle shared states that can synchronize multiple models. At its core, graphwalker is implemented in Java and only supports Maven projects natively.
 
 Since one of the goals was to create a project that runs on Python, more than graphwalker was needed. There is a Python package called altwalker, which acts as a Python wrapper around the executable and connects to graphwalker via internal sockets.
 
+My proposed process for testing IoT application is summarized by \autoref{fig:meth:prop}. I use graphwalker as the modeling tool of choice and then create a custom adaptor for the running environment. As \autoref{fig:meth:test_flow} shows, the test model is created with graphwalker. Then, the test execution environment generates abstract test cases with the help of graphwalker (via altwalker) and instances them with the adaptor. The adaptor runs concrete test steps on the embedded hardware. The execution creates a verdict based on the given test case.
+
 \autoref{sec:meth:sys_mod} details the modeling process and final artifacts created during the thesis work. The adaptor design is described in \autoref{sec:meth:ada}, and \autoref{sec:meth:ts} shows the entire test setup.
 
+\begin{figure}
+    \centering
+    \includegraphics[width=100mm, keepaspectratio]{figures/proposed_process.png}
+    \caption{Proposed process}
+    \label{fig:meth:prop}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=100mm, keepaspectratio]{figures/process_use_case.png}
+    \caption{Testing flow}
+    \label{fig:meth:test_flow}
+\end{figure}
+
 All the code and models developed for this thesis are publicly available on GitHub\footnote{\url{https://github.com/DAbraham2/Masters-Thesis}}.
+
 
 
 \section{System modeling}
@@ -21,7 +38,7 @@ All the code and models developed for this thesis are publicly available on GitH
 Graphwalker represents models as directed graphs. A graph node is called a vertex, and the edge is called an edge. Graphwalker recommends creating actions on edges and validating only on vertexes.
 
 The Bluetooth Core specifies what a peripheral device shall be capable of. GAP defines discovery and connection mode as mandatory, leaving bonding, periodic advertising, and isochronous broadcast as excluded. Also, the LE Controller states that a minimal device shall be capable of scanning or advertising. After all, the set \[
-    \{standby, scan, advertise, connected\}  
+    \{standby, scan, advertise, connected\}
 \] can describe the BLE device's state space. Since I am not testing the functionality of the profile - only the network capabilities - using any GATT services were not required.
 
 \begin{figure}
@@ -42,9 +59,9 @@ As 802.15.4 defines the whole association procedure, the Zigbee states should be
 
 For Thread, just as in Zigbee, the joining procedure is abstracted away.
 The complete state space of a device is: \[
-    \{disabled, detached, child, router, leader\}  
+    \{disabled, detached, child, router, leader\}
 \] One of the limitations is that the application cannot stop the thread network; it just resets the stack. Since I am just creating a single-node network, having the router state is not relevant for this type of testing. With those two statements, the Thread state space is: \[
-    \{disabled, child\}  
+    \{disabled, child\}
 \] ICMP ping was used in the child state to test the connection.
 
 \begin{figure}
@@ -53,7 +70,7 @@ The complete state space of a device is: \[
 \end{figure}
 
 After creating the separate models, I could make the complete model for operating the three protocols side by side. Since graphwalker does not support regions or concurrently running multiple models, I combined the three models into one. The graph's vertexes could be described as \[
-    \{standby, scan, advertise, peripheral\} \times  \{disconnected, joined\} \times \{disabled, child\}  
+    \{standby, scan, advertise, peripheral\} \times  \{disconnected, joined\} \times \{disabled, child\}
 \]
 \autoref{fig:meth_combined_model} shows the visual representation of the combined model. The final model consists of 18 vertexes and 98 edges.
 
