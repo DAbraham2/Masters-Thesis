@@ -33,9 +33,36 @@ The SoC approach provides all stack-functionality and application-layer componen
 
 In a Network Co-Processor (NCP) approach, the chip only runs the functions necessary for networking. The most common configuration is that the chip communicates with a second device called the "host" processor via either SPI or UART. The host is responsible for the application management.
 
-A Radio Co-Processor (RCP) approach is similar to the NCP. The chip only runs the physical layers of the stacks while the host runs the application and network layers. With this architecture integration of multiple protocols that use the same radio band can be better achieved.
+\begin{figure}
+    \centering
+    \includegraphics[width=100mm, keepaspectratio]{figures/zigbee_platform_design_ncp-nordicsemi.png}
+    \caption{Zigbee Network Co-processor design. Source: \cite{nordic:zigbee}}
+    \label{fig:mp:zig-ncp}
+\end{figure}
 
-\subsection{Implementations}
+\begin{figure}
+    \centering
+    \includegraphics[width=100mm, keepaspectratio]{figures/ot-arch-ncp-vert_2x.png}
+    \caption{Thread Network Co-processor design. Source: \cite{thread:platforms}}
+    \label{fig:mp:thread-ncp}
+\end{figure}
+
+A Radio Co-Processor (RCP) approach is similar to the NCP. The chip only runs the physical layers of the stacks while the host runs the application and network layers. With this architecture integration of multiple protocols that use the same radio band can be better achieved. In BLE, this is achieved with the host-controller-interface (see: \autoref{fig:mp:ble-rcp}). Thread uses the spinnel protocol to control radio devices (see: \autoref{fig:mp:thread-rcp}).
+
+\begin{figure}
+    \centering
+    \includegraphics[width=100mm, keepaspectratio]{figures/silabs-ble-rcp-QSG169.png}
+    \caption{BLE Radio Co-processor design. Source: \cite{silabs:qsg169}}
+    \label{fig:mp:ble-rcp}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=100mm, keepaspectratio]{figures/ot-arch-rcp-vert_2x.png}
+    \caption{Thread Radio Co-processor design. Source: \cite{thread:platforms}}
+    \label{fig:mp:thread-rcp}
+\end{figure}
+
+\subsection{Implementation}
 \label{sec:multi:imp}
 Based on the Bluetooth, Thread, and Zigbee governing bodies\cite{bt_members:2023, csa_members:2023, thread_members:2023}, four companies are working on and promoting multiprotocol chips: Nordic Semiconductor, NXP Semiconductors, Espressif Systems, and Silicon Laboratories. They all have software development kits (SDKs) that support the development of multiprotocol applications on SoC, NCP, and RCP configuration.
 
@@ -43,7 +70,7 @@ Two distinct approaches could be differentiated between the four companies. Espr
 
 \begin{figure}
     \centering
-    \includegraphics[width=100mm, keepaspectratio]{figures/nxp_k32w061_41-block-dia.png}
+    \includegraphics[width=140mm, keepaspectratio]{figures/nxp_k32w061_41-block-dia.png}
     \caption{NXP k32w061 block diagram. Source: \cite{nxp}}
     \label{fig:mp:nxp-dia}
 \end{figure}
