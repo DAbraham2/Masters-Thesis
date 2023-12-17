@@ -10,7 +10,7 @@ I chose graphwalker as my modeling tool. It has a limited toolset for creating d
 
 Since one of the goals was to create a project that runs on Python, more than graphwalker was needed. There is a Python package called altwalker, which acts as a Python wrapper around the executable and connects to graphwalker via internal sockets.
 
-My proposed process for testing IoT application is summarized by \autoref{fig:meth:prop}. I use graphwalker as the modeling tool of choice and then create a custom adaptor for the running environment. As \autoref{fig:meth:test_flow} shows, the test model is created with graphwalker. Then, the test execution environment generates abstract test cases with the help of graphwalker (via altwalker) and instances them with the adaptor. The adaptor runs concrete test steps on the embedded hardware. The execution creates a verdict based on the given test case.
+My proposed process for testing IoT application is summarized by \autoref{fig:meth:prop}. I use graphwalker as the modeling tool of choice and then create a custom adaptor for the running environment. As \autoref{fig:meth:test_flow} shows, the test model is created with graphwalker. Then, the test execution environment generates abstract test cases with the help of graphwalker (via altwalker) and instantiates them with the adaptor. The adaptor runs concrete test steps on the embedded hardware. The execution creates a verdict based on the given test case.
 
 \autoref{sec:meth:sys_mod} details the modeling process and final artifacts created during the thesis work. The adaptor design is described in \autoref{sec:meth:ada}, and \autoref{sec:meth:ts} shows the entire test setup.
 
@@ -43,18 +43,18 @@ The Bluetooth Core specifies what a peripheral device shall be capable of. GAP d
 
 \begin{figure}
     \includegraphics[width=100mm, keepaspectratio]{figures/model_ble_final.png}
-    \caption{Complete BLE model}
+    \caption{BLE model}
 \end{figure}
 
 As 802.15.4 defines the whole association procedure, the Zigbee states should be: \[
     \{disconnected, scan, association, joined\}
-\] Luckily, the application I was given had some plugins prepared for networking. The network-steering plugin automatically made the association process and gave its results. It tested the scanning, beaconing, and association procedures all in one. The final set of spaces is then reduced to just: \[
+\] Luckily, the application I was given had some plugins prepared for networking. The network-steering plugin automatically made the association process and gave its results. It tested the scanning, beaconing, and association procedures all in one. The final set of states is then reduced to just: \[
     {disconnected, connected}
 \] Another plugin- throughput- was used to test the network's ability to relay data. The complete graph of Zigbee can be found in the following.
 
 \begin{figure}
     \includegraphics[width=100mm, keepaspectratio]{figures/model_zigbee_final.png}
-    \caption{Complete Zigbee model}
+    \caption{Zigbee model}
 \end{figure}
 
 For Thread, just as in Zigbee, the joining procedure is abstracted away.
@@ -66,7 +66,7 @@ The complete state space of a device is: \[
 
 \begin{figure}
     \includegraphics[width=100mm, keepaspectratio]{figures/model_thread_finished.png}
-    \caption{Complete Thread model}
+    \caption{Thread model}
 \end{figure}
 
 After creating the separate models, I could make the complete model for operating the three protocols side by side. Since graphwalker does not support regions or concurrently running multiple models, I combined the three models into one. The graph's vertexes could be described as \[

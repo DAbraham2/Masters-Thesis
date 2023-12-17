@@ -1,7 +1,7 @@
 \section{Wireless protocols}
 \label{chap:wireless}
 
-In this chapter, I will describe and introduce some of the overwelming amount of protocols used in IoT.
+In this chapter, I will describe and introduce some of the of protocols used in IoT.
 I will demonstrate each wireless protocol starting with Bluetooth Low Energy in \autoref{sec:ble},
 Zigbee in \autoref{sec:zig}, and finally Thread/OpenThread in \autoref{sec:ot}.
 \autoref{sec:15_4} will provide an overview of the IEEE 802.15.4 radio specification, of which both Zigbee and Thread is based on.
@@ -257,7 +257,7 @@ It supports a maximum data rate of 250 kbps.
 \subsubsection{Medium Access Control Layer (MAC)}
 The MAC layer describes essential message handling and congestion control.
 This layer includes mechanisms for forming and joining a network, a CSMA-CA mechanism,
-and a link layer for retires and acknowledgment for reliable communication. (ug103-02)
+and a link layer for retires and acknowledgment for reliable communication \cite{zigbee:silabs:ug103:2}.
 
 For device identification, the layer uses 16-bit short addresses and 64-bit extended addresses.
 Devices can be assigned a unique short address by the network coordinator to enable efficient addressing in the network.
@@ -351,13 +351,8 @@ For future use, the alliance reserved the index range from 241 to 254.
 Zigbee device object interfaces the application objects, the device profile, and the APS. For the application objects, it provides device control and network functions. Other functions are address management of the device, discovery, binding, and security. (Wang et al., 2016)
 
 The ZDO is responsible for initializing the APS sublayer, the NWK layer, and the Security Service Provider. Also, the ZDO defines the role of the device within a ZigBee network.
-\subsubsection{Cluster Library}
 
-%\url{https://www.academia.edu/73196763/A_Survey_of_ZigBee_Wireless_Sensor_Network_Technology_Topology_Applications_and_Challenges}
-%\url{https://issuu.com/ijtsrd.com/docs/399_literature_survey_on_zigbee_iee}
-%\url{https://www.sciencedirect.com/topics/engineering/zigbee-protocol}
-
-\subsection{Thread/OpenThread}
+\subsection{Thread}
 \label{sec:ot}
 
 \subsubsection{Introduction}
@@ -444,12 +439,12 @@ the Joiner Router (see \autoref{fig:ot:joiner-rt-sm}), and the Commissioner (see
     \label{fig:ot:joiner-rt-sm}
 \end{figure}
 
-\begin{figure}[!ht]
-    \centering
-    \includegraphics[width=100mm, keepaspectratio]{figures/commissioner-sm-Final_12639Thread_1.3.jpg}
-    \caption{The Commissioner's state machine (Source: \cite{thread:130})}
-    \label{fig:ot:commissioner-sm}
-\end{figure}
+%\begin{figure}[!ht]
+%    \centering
+%    \includegraphics[width=100mm, keepaspectratio]{figures/commissioner-sm-Final_12639Thread_1.3.jpg}
+%    \caption{The Commissioner's state machine (Source: \cite{thread:130})}
+%    \label{fig:ot:commissioner-sm}
+%\end{figure}
 
 %\url{https://ieeexplore.ieee.org/abstract/document/8767079}
 %\url{https://ieeexplore.ieee.org/abstract/document/8373620}
