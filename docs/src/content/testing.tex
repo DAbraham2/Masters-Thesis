@@ -2,7 +2,7 @@
 \label{chap:testing}
 \subsection{Overview}
 A lot of different standard bodies and writers have defined software testing.
-The International Software Testing Qualifications Board (ISTQB) defines software testing
+Standardization organizations define software testing
 as follows: "The process consisting of all lifecycle activities, both static and
 dynamic, concerned with planning, preparation, and evaluation of software products and
 related work products; to determine that they satisfy specified requirements,
@@ -57,13 +57,13 @@ Common types used in the industry are functional, non-functional, and regression
 
 Functional testing evaluates the functions that a system (or component) should perform. The main objective is to check the functional completeness and correctness of the system.
 
-In Non-functional testing, the goals are to test how well the system behaves. Commonly used software quality characteristics are defined by ISO/IEC 25010 standard\cite{iso_25010:2011}. These characteristics are performance, compatibility, usability, reliability, security, maintainability, and portability. Non-functional tests may need specific test environments.
+In non-functional testing, the goals are to test how well the system behaves. Commonly used software quality characteristics are defined by ISO/IEC 25010 standard\cite{iso_25010:2011}. These characteristics are performance, compatibility, usability, reliability, security, maintainability, and portability. Non-functional tests may need specific test environments.
 
 Regression testing confirms that changes in the codebase did not inject new defects into the functionality. According to ISTQB, performing an impact analysis is advisable to optimize the extent of the regression testing.
 
 \subsection{Model-based test generation}
 
-Model-based testing (MBT) can best be defined as using models during the testing process \cite{cmbt:syllabus:2015}. Utting et al. \cite{utting2012taxonomy} defined a complete taxonomy for MBT approaches. MBT has two distinct artifacts: a developed model and an adaptor component, which ties the model to the SUT. They defined that the approach has seven major activities (see: \autoref{fig:mbt:taxonomy}):
+Model-based testing (MBT) can best be defined as using models during the testing process \cite{cmbt:syllabus:2015}. Utting et al. \cite{utting2012taxonomy} defined a complete taxonomy for MBT approaches. MBT has two distinct artifacts: a developed model and an adaptor component, which ties the model to the SUT. They defined that the approach has five major activities (see: \autoref{fig:mbt:taxonomy}):
 \begin{enumerate}
     \item model creation
     \item criteria definition
@@ -82,7 +82,7 @@ Testers use MBT from unit up to system level testing, but it is used primarily f
 
 Models can best describe the system's intended behavior under test or its environment. Several surveys show that there is only one preferred modeling approach \cite{10.1145/1353673.1353681, mbt-survey:2016, mbt-survey:2019}, but state machine representations are the most popular. Then, state models get transformed into a directed graph. Modeling can be used to abstract different aspects of the SUT (function, data, and communication abstraction)
 
-From the models - based on set criteria - automated tools could generate abstract test cases. The criteria could be in different forms: structural, requirement, or other coverage. Deriving test cases is usually based on random generation or graph search algorithms. Generation could be considered online of offline. In online generation concrete execution starts at the same time as generation. On the other hand, the offline mode can create abstract tests before the adaptor implementation. After the necessary codes are developed, the execution engine could run the offline-generated tests.
+From the models - based on set criteria - automated tools could generate abstract test cases. The criteria could be in different forms: structural, requirement, or other coverage. Deriving test cases is usually based on random generation or graph search algorithms. Generation could be considered online or offline. In online generation concrete execution starts at the same time as generation. On the other hand, the offline mode can create abstract tests before the adaptor implementation. After the necessary codes are developed, the execution engine could run the offline-generated tests.
 
 Execution engines create concrete test cases in conjunction with the adaptor component from the abstract test cases. The adaptor component wraps the SUT and handles the communication directly. It is used to control and monitor different aspects of the tested system. After the execution, the engine makes a verdict from the SUT responses and reports it back to the QA engineer.
 

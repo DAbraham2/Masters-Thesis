@@ -1,10 +1,9 @@
 \chapter{Results}
 \label{chap:results}
-\section{Overview}
 The main goal of testing was to find any functional defects in the multiprotocol application. The test runner was configured to achieve 100 percent vertex and at least 80 percent edge coverage. As the number of edges reached almost one hundred, the reduction of edge coverage helped reduce testing time.
 
 
-For the first attempts, a default formed from the execution of the model. After running more and more times, I found out that resetting the thread stack of the application(thread factory\_reset) caused the drop of a formed BLE connection.
+For the first attempts, a defect started to form from the execution of the model. After running more and more times, I found out that resetting the thread stack of the application(thread factory\_reset) caused the drop of a formed BLE connection.
 
 
 This behavior is not desirable because if there is an ongoing operation on the BLE side when the reset comes, it could cause other malfunctions at the application level.
@@ -15,7 +14,7 @@ During BLE scanning, the 15.4 stack could expect packet drops.
 Considering this, I prepared the adaptor code to be flexible on Zigbee and Thread operations. Having a rigid code would cause false negative test results.
 
 
-After modifying the test suite, I noticed a significant success rate drop on Zigbee joins while the BLE stack was scanning.
+After modifying the test suite, I noticed a significant drop on success rate of Zigbee joins while the BLE stack was scanning.
 The successes dropped to roughly 70 percent.
 Anything less than 50 percent would be considered a failure.
 
@@ -39,7 +38,13 @@ It used both quick random\footnote{\url{https://github.com/GraphWalker/graphwalk
     \label{tab:res:summary}
 \end{table}
 
-In conclusion, I have managed to find new bugs and performance degradations in the given application, achieving ~60 percent vertex coverage. The edge coverage stayed below 30 percent during testing due to execution failure on defects in the SUT. \autoref{tab:res:cov} summarizes coverage data.
+In conclusion,
+I have managed to find new bugs and performance degradations in the given application, achieving ~60 percent vertex coverage.
+The edge coverage stayed below 30 percent during testing due to execution failure on defects in the SUT.
+\autoref{tab:res:cov} summarizes coverage data.
+During testing, Graphwalker was generated more than 100 different test cases for various states.
+I was able to generate a test execution that covered many requirements from the standards.
+The largest requirement coverage that was achieved without failing was 35\%.
 
 \begin{table}
     \centering
