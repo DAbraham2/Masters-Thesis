@@ -35,6 +35,8 @@ The mainboard can connect to the outside world via USB or a network connection v
 
 Furthermore, Silicon Labs provided the necessary applications to run the scenario. The Silicon Labs' Gecko Software Development Kit (GSDK) is their integrated software solution. It is open-source and published on Git Hub\cite{silabs_gsdk:2023}. I was given a slightly modified version of the company's sample applications. All the SoC applications have a CLI interface compiled into the binary.
 
+During this thesis, I will create an abstract model to represent a valid IoT use case. Then, I present a solution to generate abstract test cases and eventually attach the test environment to the embedded system running in real time.  The abstraction layer will be connected to the test environment with an adaptor codebase. The adaptor will manage the test devices and handle the communication between the test executor and thee system under test.
+
 \section{Thesis Outline}
 
 This thesis has two parts: a literature review and a contribution. The literature review will consist of \autoref{chap:background}.
@@ -43,8 +45,3 @@ In \autoref{chap:wireless}, Wireless protocols will be shown.
 \autoref{chap:multiprot} will introduce the concept of multiprotocol networking, and \autoref{chap:testing} will introduce some software and system testing techniques.
 
 My contributions will be described in \autoref{chap:methodology}. After the methodology, \autoref{chap:results} summarizes the results evaluated from testing. Lastly, \autoref{chap:conclusion} summarises the thesis work and provides some future work.
-
-
-
-\section{Contributions}
-During this thesis, I will create an abstract model to represent a valid IoT use case. Then, I present a solution to generate abstract test cases and eventually attach the test environment to the embedded system running in real time.
